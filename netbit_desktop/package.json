@@ -1,14 +1,13 @@
 {
-	"name": "electron-react-tailwind-template",
+	"name": "NetBit",
 	"author": {
-		"email": "demirci.baris38@gmail.com",
-		"name": "Barış DEMİRCİ",
-		"url": "https://338.rocks"
+		"name": "Kazilsky",
+		"email": "mk9151341600@gmail.com"
 	},
-	"description": "Electron app template with React and Tailwind CSS",
+	"description": "JustMessenger",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/barbarbar338/electron-react-tailwind-template"
+		"url": "https://github.com/Kazilsky/netbit"
 	},
 	"license": "GPL-3.0",
 	"version": "1.0.1",

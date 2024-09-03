@@ -28,7 +28,7 @@ export const Titlebar: FC = () => {
 	const onQuit = () => app.quit();
 
 	return (
-		<div className="title-bar sticky top-0 select-none">
+		<div className="title-bar sticky top-0 blur-100 select-none opacity-100">
 			<div className="menu-button-container">
 				<img
 					id="icon"
