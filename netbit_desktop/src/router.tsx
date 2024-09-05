@@ -9,7 +9,6 @@ export const Router = () => {
 			<Routes>
 				<Route path="/">
 					<Route index element={<IndexPage />} />
-					<Route path="popup" element={<PopupPage />} />
 				</Route>
 			</Routes>
 		</HashRouter>
