@@ -164,7 +164,7 @@ export function SettingsList() {
               <div className="flex justify-center items-center gap-2">
                   <NavbarSimple/>
               </div>
-              <SettingsList/>
+              <SettingsList/> 
             </div>
            
         )
