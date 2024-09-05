@@ -161,10 +161,12 @@ export function SettingsList() {
     const Settings = () => {
         return (
             <div className="flex justify-center items-center gap-2">
-
-                <SettingsList/>
-                <NavbarSimple/>
+              <div className="flex justify-center items-center gap-2">
+                  <NavbarSimple/>
+              </div>
+              <SettingsList/>
             </div>
+           
         )
     }
     
