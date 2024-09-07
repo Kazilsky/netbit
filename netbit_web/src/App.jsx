@@ -1,15 +1,17 @@
-import { useState } from 'react'
-import './index.css'
-import Routers from "../components/Router"
+import React from 'react';
+import './index.css';
+import Routers from './components/Router';
+import { useContext } from 'react';
+import { ThemeContext } from './main';
 
 function App() {
-  const [count, setCount] = useState(0)  
+  const { toggleTheme } = useContext(ThemeContext);
 
   return (
     <>
       <Routers />
     </>
-  )
+  );
 }
 
-export default App
+export default App;
