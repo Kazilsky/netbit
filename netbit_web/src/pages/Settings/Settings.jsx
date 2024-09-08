@@ -5,15 +5,17 @@ import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 import { ThemeContext } from '../../main';
 
 import Bar from '../../components/StatusBar_Setting/Bar';
-import Switcher from '../../components/Switcher_Theme';
+import ThemeToggle from '../../components/ThemeToggle';
+import DiscordStyleProfile from '../../components/Profile_Setting/DiscordProfile_test';
+import TextRangeSlider from '../../components/Slider';
+import { Slider } from '@material-tailwind/react';
 
 const SettingsOption = ({ icon, label, active, onClick }) => (
   <div
-    className={`flex items-center p-3 rounded-md cursor-pointer transition-all duration-200 ${
-      active 
-        ? 'bg-blue-500 text-white' 
+    className={`flex items-center p-3 rounded-md cursor-pointer transition-all duration-200 ${active
+        ? 'bg-blue-500 text-white'
         : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-    }`}
+      }`}
     onClick={onClick}
   >
     {icon}
@@ -53,27 +55,25 @@ const Dropdown = ({ options, value, onChange }) => {
       >
         <span className="block truncate">{value.name}</span>
         <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-          <svg 
-            className={`h-5 w-5 text-gray-400 transition-transform duration-300 ease-in-out ${isOpen ? 'transform rotate-180' : ''}`} 
-            viewBox="0 0 20 20" 
-            fill="none" 
+          <svg
+            className={`h-5 w-5 text-gray-400 transition-transform duration-300 ease-in-out ${isOpen ? 'transform rotate-180' : ''}`}
+            viewBox="0 0 20 20"
+            fill="none"
             stroke="currentColor"
           >
             <path d="M7 7l3-3 3 3m0 6l-3 3-3-3" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </span>
       </div>
-      <div 
-        className={`absolute mt-1 w-full rounded-md bg-white dark:bg-gray-700 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-10 transition-all duration-300 ease-in-out ${
-          isOpen ? 'opacity-100 transform scale-100' : 'opacity-0 transform scale-95 pointer-events-none'
-        }`}
+      <div
+        className={`absolute mt-1 w-full rounded-md bg-white dark:bg-gray-700 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-10 transition-all duration-300 ease-in-out ${isOpen ? 'opacity-100 transform scale-100' : 'opacity-0 transform scale-95 pointer-events-none'
+          }`}
       >
         {options.map((option) => (
           <div
             key={option.id}
-            className={`${
-              option.id === value.id ? 'bg-indigo-600 text-white' : 'text-gray-900 dark:text-gray-100'
-            } cursor-pointer select-none relative py-2 pl-10 pr-4 hover:bg-indigo-500 hover:text-white transition-colors duration-200 ease-in-out`}
+            className={`${option.id === value.id ? 'bg-indigo-600 text-white' : 'text-gray-900 dark:text-gray-100'
+              } cursor-pointer select-none relative py-2 pl-10 pr-4 hover:bg-indigo-500 hover:text-white transition-colors duration-200 ease-in-out`}
             onClick={() => {
               onChange(option);
               setIsOpen(false);
@@ -101,58 +101,23 @@ const ProfileSettings = () => {
   const [userStatus, setUserStatus] = useState(statusOptions[0]);
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-        Настройки пользователя
-      </h2>
-      <div className="flex items-center space-x-6 mb-6">
-        <Bar src={avatarSrc} status={userStatus.id} />
-        <div className="flex-grow">
-          <p className="text-gray-900 dark:text-white font-medium mb-2">
-            Ваш профиль
-          </p>
-          <Dropdown
-            options={statusOptions}
-            value={userStatus}
-            onChange={setUserStatus}
-          />
-        </div>
-      </div>
-      <input
-        type="text"
-        placeholder="Отображаемое имя"
-        className="w-full px-4 py-2 border rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-900 transition-all duration-200"
-      />
-      <input
-        type="text"
-        placeholder="Имя пользователя"
-        className="w-full px-4 py-2 border rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-900 transition-all duration-200"
-      />
-      <input
-        type="password"
-        placeholder="Пароль"
-        className="w-full px-4 py-2 border rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-900 transition-all duration-200"
-      />
-      <button className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
-        Сохранить изменения
-      </button>
-    </div>
-
+    <DiscordStyleProfile />
   );
 };
 
 const AppearanceSettings = () => {
-  const { theme, toggleTheme } = useContext(ThemeContext);
-
   return (
     <div className="space-y-4">
       <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
         Внешний вид
       </h2>
       <div className="flex items-center justify-between">
-        <p className="text-gray-700 dark:text-gray-300">Темный режим</p>
-        <Switcher />
+        <ThemeToggle />
       </div>
+      <div className="flex items-center justify-between">
+        <TextRangeSlider />
+      </div>
+        
     </div>
   );
 };
@@ -161,6 +126,24 @@ const UpdatesSettings = () => (
   <div className="space-y-4">
     <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
       Обновления
+    </h2>
+    {/* Добавьте настройки уведомлений здесь */}
+  </div>
+);
+
+const LanguageSettings = () => (
+  <div className="space-y-4">
+    <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+      Язык
+    </h2>
+    {/* Добавьте настройки уведомлений здесь */}
+  </div>
+);
+
+const AdvancedSettings = () => (
+  <div className="space-y-4">
+    <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+      Расширенные
     </h2>
     {/* Добавьте настройки уведомлений здесь */}
   </div>
@@ -178,13 +161,17 @@ const Settings = () => {
         return <AppearanceSettings />;
       case 'updates':
         return <UpdatesSettings />;
+      case 'language':
+        return <LanguageSettings />;
+      case 'advanced':
+        return <AdvancedSettings />;
       default:
         return <ProfileSettings />;
     }
   };
 
   return (
-    <div className={`flex h-screen w-full ${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-900'}`}>
+    <div className={`flex w-screen h-screen ${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-900'}`}>
       <div className={`w-72 h-full ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} p-4 shadow-xl`}>
         <h1 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">
           Настройки
@@ -208,9 +195,21 @@ const Settings = () => {
             active={activeTab === 'updates'}
             onClick={() => setActiveTab('updates')}
           />
+          <SettingsOption
+            icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M7.75 2.75a.75.75 0 0 0-1.5 0v1.258a32.987 32.987 0 0 0-3.599.278.75.75 0 1 0 .198 1.487A31.545 31.545 0 0 1 8.7 5.545 19.381 19.381 0 0 1 7 9.56a19.418 19.418 0 0 1-1.002-2.05.75.75 0 0 0-1.384.577 20.935 20.935 0 0 0 1.492 2.91 19.613 19.613 0 0 1-3.828 4.154.75.75 0 1 0 .945 1.164A21.116 21.116 0 0 0 7 12.331c.095.132.192.262.29.391a.75.75 0 0 0 1.194-.91c-.204-.266-.4-.538-.59-.815a20.888 20.888 0 0 0 2.333-5.332c.31.031.618.068.924.108a.75.75 0 0 0 .198-1.487 32.832 32.832 0 0 0-3.599-.278V2.75Z" /><path fill-rule="evenodd" d="M13 8a.75.75 0 0 1 .671.415l4.25 8.5a.75.75 0 1 1-1.342.67L15.787 16h-5.573l-.793 1.585a.75.75 0 1 1-1.342-.67l4.25-8.5A.75.75 0 0 1 13 8Zm2.037 6.5L13 10.427 10.964 14.5h4.073Z" clip-rule="evenodd" /></svg>}
+            label="Язык"
+            active={activeTab === 'language'}
+            onClick={() => setActiveTab('language')}
+          />
+          <SettingsOption
+            icon={<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" /></svg>}
+            label="Расширенные"
+            active={activeTab === 'advanced'}
+            onClick={() => setActiveTab('advanced')}
+          />
         </div>
       </div>
-      <div className="flex-grow p-8">
+      <div className="flex-grow p-8 flex flex-col">
         <div className={`p-6 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} shadow-lg h-full rounded-lg`}>
           {renderContent()}
         </div>

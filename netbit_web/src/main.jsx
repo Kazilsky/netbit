@@ -9,8 +9,18 @@ const ThemeContext = React.createContext({ theme: 'light', toggleTheme: () => {}
 const MainApp = () => {
   const [theme, setTheme] = React.useState('light');
 
+  // Загрузка темы из localStorage при первом рендере
+  React.useEffect(() => {
+    const storedTheme = localStorage.getItem('theme');
+    if (storedTheme) {
+      setTheme(storedTheme);
+    }
+  }, []); // Пустой массив зависимостей означает, что эффект выполнится только один раз
+
   const toggleTheme = () => {
-    setTheme((prevTheme) => (prevTheme === 'light' ? 'dark' : 'light'));
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+    localStorage.setItem('theme', newTheme); // Сохраняем выбранную тему в localStorage
   };
 
   React.useEffect(() => {
@@ -22,7 +32,7 @@ const MainApp = () => {
   }, [theme]);
 
   const customTheme = { theme };
-
+  
   return (
     <React.StrictMode>
       <ThemeContext.Provider value={{ theme, toggleTheme }}>

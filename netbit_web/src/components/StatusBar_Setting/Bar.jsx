@@ -15,10 +15,10 @@ export default function Bar({ src, status = 'online' }) {
     };
 
     const getStatusIcon = () => {
-        switch (status) {
-            case 'do_not_disturb':
+    switch (status) {
+        case 'do_not_disturb':
                 return (
-                    <div className={`w-full h-0.5 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`} />
+                    <div className={`w-3.5 rounded-md h-1 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`} />
                 );
             case 'busy':
                 return (

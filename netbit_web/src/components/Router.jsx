@@ -10,7 +10,6 @@ const Routers = () => {
               {/* <Route index element={<BasePage />} /> */}
                 <Route path="setting" element={<SettingsList />} />
                 <Route path="dmchat" element={<DMChat />} />
-                
           </Route>
       </Routes>
     </Router>    

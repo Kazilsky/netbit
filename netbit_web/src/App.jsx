@@ -5,7 +5,6 @@ import { useContext } from 'react';
 import { ThemeContext } from './main';
 
 function App() {
-  const { toggleTheme } = useContext(ThemeContext);
 
   return (
     <>
