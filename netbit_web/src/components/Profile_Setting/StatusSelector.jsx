@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const statusOptions = [
   { id: 'online', name: 'Online', color: 'bg-green-500' },
-  { id: 'idle', name: 'Idle', color: 'bg-yellow-500' },
+  { id: 'busy', name: 'Idle', color: 'bg-yellow-500' },
   { id: 'do_not_disturb', name: 'Do Not Disturb', color: 'bg-red-500' },
   { id: 'away', name: 'Away', color: 'bg-gray-500' },
 ];

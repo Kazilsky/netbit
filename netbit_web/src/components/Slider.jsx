@@ -1,18 +1,41 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { ThemeContext } from '../main';
 import { motion } from 'framer-motion';
 
 const TextScaleSlider = ({ min = 50, max = 200, step = 25, initialValue = 100 }) => {
   const { theme } = useContext(ThemeContext);
   const [value, setValue] = useState(initialValue);
+  const [tempValue, setTempValue] = useState(initialValue); // Временное значение для ползунка
+  const [displayValue, setDisplayValue] = useState(initialValue); // Значение для отображения
+  const [rootFontSize, setRootFontSize] = useState(100); // Начальный размер шрифта
+
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    setIsVisible(true);
+
+    const timeout = setTimeout(() => {
+      setIsVisible(false);
+    }, 1000);
+
+    return () => clearTimeout(timeout);
+  }, [tempValue]);
 
   const handleChange = (e) => {
-    setValue(Number(e.target.value));
+    const newValue = Number(e.target.value);
+    setRootFontSize(newValue)
+    setTempValue(newValue); // Обновляем временное значение при изменении ползунка
+  };
+
+  const handleChangeAfter = () => {
+    setValue(tempValue); // Обновляем окончательное значение
+    setDisplayValue(tempValue); // Обновляем отображаемое значение
+    updateRootFontSize(tempValue); // Обновляем размер шрифта
   };
 
   const getBackgroundSize = () => {
     return {
-      backgroundSize: `${((value - min) * 100) / (max - min)}% 100%`
+      backgroundSize: `${((tempValue - min) * 100) / (max - min)}% 100%`
     };
   };
 
@@ -21,15 +44,27 @@ const TextScaleSlider = ({ min = 50, max = 200, step = 25, initialValue = 100 })
     steps.push(i);
   }
 
+  const updateRootFontSize = (newValue) => {
+    const newFontSize = (16 * newValue) / 100; // Расчет нового размера шрифта
+    setRootFontSize(newFontSize);
+    document.documentElement.style.fontSize = `${newFontSize}px`; // Обновление размера шрифта в корневом элементе
+  };
+
+  useEffect(() => {
+    updateRootFontSize(value); // Обновление размера шрифта при первом рендере
+  }, [value]);
+
   return (
-    <div className={`w-full max-w-md mx-auto p-4 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow-lg`}>
+    <div className={`w-full max-w-md p-4 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} rounded-xl shadow-lg`}>
       <input
         type="range"
         min={min}
         max={max}
         step={step}
-        value={value}
+        value={tempValue}
         onChange={handleChange}
+        onTouchEnd={handleChangeAfter}
+        onMouseUp={handleChangeAfter} // Обработка события отпускания ползунка на десктопе
         className={`w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer 
                     ${theme === 'dark' ? 'dark:bg-gray-700' : ''}
                     `}
@@ -37,8 +72,8 @@ const TextScaleSlider = ({ min = 50, max = 200, step = 25, initialValue = 100 })
           ...getBackgroundSize(),
           background: `linear-gradient(to right, 
             ${theme === 'dark' ? '#3B82F6' : '#2563EB'} 0%, 
-            ${theme === 'dark' ? '#3B82F6' : '#2563EB'} ${((value - min) * 100) / (max - min)}%, 
-            ${theme === 'dark' ? '#4B5563' : '#E5E7EB'} ${((value - min) * 100) / (max - min)}%, 
+            ${theme === 'dark' ? '#3B82F6' : '#2563EB'} ${((tempValue - min) * 100) / (max - min)}%, 
+            ${theme === 'dark' ? '#4B5563' : '#E5E7EB'} ${((tempValue - min) * 100) / (max - min)}%, 
             ${theme === 'dark' ? '#4B5563' : '#E5E7EB'} 100%)`
         }}
       />
@@ -68,16 +103,27 @@ const TextScaleSlider = ({ min = 50, max = 200, step = 25, initialValue = 100 })
         animate={{ scale: [1, 1.1, 1] }}
         transition={{ duration: 0.3 }}
       >
-        {value}%
+        {displayValue}%
       </motion.div>
-      <div className="mt-4 text-center">
-        <span 
-          className={`inline-block ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}
-          style={{ fontSize: `${value}%` }}
-        >
-          Sample Text
-        </span>
-      </div>
+      {tempValue !== displayValue && (
+      <motion.div
+      className="mt-2 text-center"
+      initial={{ opacity: 0, y: -10, scale: 0.9 }}
+      animate={{
+        opacity: isVisible ? 1 : 0,
+        y: isVisible ? 0 : -10,
+        scale: isVisible ? 1 : 0.9,
+        fontSize: `${tempValue}%`, // Убедитесь, что размер шрифта также анимируется
+      }}
+      transition={{ duration: 0.3 }}
+    >
+      <span
+        className={`inline-block ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}
+      >
+        Пример текста
+      </span>
+    </motion.div>
+    )}
     </div>
   );
 };

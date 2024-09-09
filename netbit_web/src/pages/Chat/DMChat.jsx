@@ -1,6 +1,7 @@
 import React, { useState, useContext, useRef, useEffect } from 'react';
 import { ThemeContext } from '../../main';
 import { Send, Paperclip } from 'lucide-react';
+import DropdownButton from '../../components/Chat/DMChat/DropDownFileInput';
 
 const ChatInterface = () => {
   const { theme } = useContext(ThemeContext);
@@ -12,7 +13,7 @@ const ChatInterface = () => {
   const [selectedContact, setSelectedContact] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
-  const messagesEndRef = useRef(null);
+  const messagesEndRef = useRef(null); 
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -91,7 +92,9 @@ const ChatInterface = () => {
             </div>
 
             {/* Message Input */}
+    
             <form onSubmit={handleSendMessage} className={`p-4 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} border-t flex`}>
+            <DropdownButton/>
               <input
                 type="text"
                 value={newMessage}
@@ -101,14 +104,6 @@ const ChatInterface = () => {
                   theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-900'
                 }`}
               />
-              <button
-                type="button"
-                className={`p-2 ${
-                  theme === 'dark' ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-200 hover:bg-gray-300'
-                }`}
-              >
-                <Paperclip size={20} />
-              </button>
               <button
                 type="submit"
                 className={`p-2 rounded-r-lg ${
@@ -132,3 +127,4 @@ const ChatInterface = () => {
 };
 
 export default ChatInterface;
+
