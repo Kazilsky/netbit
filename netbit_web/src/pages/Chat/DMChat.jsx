@@ -1,15 +1,12 @@
 import React, { useState, useContext, useRef, useEffect } from 'react';
 import { ThemeContext } from '../../main';
-import { Send, Paperclip } from 'lucide-react';
-import DropdownButton from '../../components/Chat/DMChat/DropDownFileInput';
-import DefaultInput from '../../components/Chat/DMChat/DefaultInput';
-
+import { Send, Paperclip, Search, Phone, User } from 'lucide-react';
 
 const ChatInterface = () => {
   const { theme } = useContext(ThemeContext);
   const [contacts, setContacts] = useState([
-    { id: 1, name: 'John Doe', avatar: 'https://docs.material-tailwind.com/img/face-2.jpg', lastMessage: 'Hey, how are you?', online: true },
-    { id: 2, name: 'Jane Smith', avatar: 'https://docs.material-tailwind.com/img/face-3.jpg', lastMessage: 'See you later!', online: false },
+    { id: 1, name: 'John Doe', avatar: 'https://docs.material-tailwind.com/img/face-2.jpg', status: 'online', lastMessage: 'Hey, how are you?' },
+    { id: 2, name: 'Jane Smith', avatar: 'https://docs.material-tailwind.com/img/face-3.jpg', status: 'offline', lastMessage: 'See you later!' },
     // Add more contacts as needed
   ]);
   const [selectedContact, setSelectedContact] = useState(null);
@@ -31,28 +28,39 @@ const ChatInterface = () => {
     }
   };
 
+  const getStatusColor = (status) => {
+    return status === 'online' ? 'bg-green-500' : 'bg-gray-500';
+  };
+
   return (
-    <div className={`flex w-screen h-screen ${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-900'}`}>
+    <div className={`flex w-screen h-screen ${theme === 'dark' ? 'bg-gray-900 text-gray-100' : 'bg-gray-100 text-gray-900'}`}>
       {/* Contacts List */}
-      <div className={`w-1/4 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} border-r overflow-y-auto`}>
-        <h2 className="text-xl font-bold p-4">Contacts</h2>
-        <DefaultInput />
+      <div className={`w-64 ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-200'} overflow-y-auto`}>
+        <div className="p-4">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search"
+              className={`w-full p-2 pl-8 rounded ${theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-white text-gray-900'}`}
+            />
+            <Search className="absolute left-2 top-2.5 h-5 w-5 text-gray-500" />
+          </div>
+        </div>
         {contacts.map((contact) => (
           <div
             key={contact.id}
-            className={`flex items-center p-4 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer ${selectedContact === contact ? (theme === 'dark' ? 'bg-gray-700' : 'bg-gray-200') : ''
-              }`}
+            className={`flex items-center p-3 cursor-pointer ${
+              selectedContact === contact ? (theme === 'dark' ? 'bg-gray-700' : 'bg-gray-300') : ''
+            } hover:${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-300'}`}
             onClick={() => setSelectedContact(contact)}
           >
             <div className="relative">
-              <img src={contact.avatar} alt={contact.name} className="w-12 h-12 rounded-full" />
-              {contact.online && (
-                <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
-              )}
+              <img src={contact.avatar} alt={contact.name} className="w-10 h-10 rounded-full" />
+              <div className={`absolute bottom-0 right-0 w-3 h-3 ${getStatusColor(contact.status)} rounded-full border-2 ${theme === 'dark' ? 'border-gray-800' : 'border-gray-200'}`}></div>
             </div>
-            <div className="ml-4">
-              <h3 className="font-semibold">{contact.name}</h3>
-              <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{contact.lastMessage}</p>
+            <div className="ml-3 overflow-hidden">
+              <p className="font-semibold truncate">{contact.name}</p>
+              <p className={`text-sm truncate ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{contact.lastMessage}</p>
             </div>
           </div>
         ))}
@@ -63,57 +71,41 @@ const ChatInterface = () => {
         {selectedContact ? (
           <>
             {/* Chat Header */}
-            <div className={`p-4 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} border-b flex items-center`}>
-              <img src={selectedContact.avatar} alt={selectedContact.name} className="w-10 h-10 rounded-full" />
-              <h2 className="ml-4 font-semibold">{selectedContact.name}</h2>
-              <a
-                href="javascript:void(0)"
-                class="bg-dark dark:bg-dark-2 border-dark dark:border-dark-2 border rounded-md inline-flex items-center justify-center py-3 px-2 text-center text-base font-medium text-white hover:bg-body-color hover:border-body-color disabled:bg-gray-3 disabled:border-gray-3 disabled:text-dark-5"
-              >
-                <span class="pr-[10px]">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-                  </svg>
-                </span>
-              </a>
-              <a
-                href="javascript:void(0)"
-                class="bg-dark dark:bg-dark-2 border-dark dark:border-dark-2 border rounded-md inline-flex items-center justify-center py-3 px-2 text-center text-base font-medium text-white hover:bg-body-color hover:border-body-color disabled:bg-gray-3 disabled:border-gray-3 disabled:text-dark-5"
-              >
-                <span class="pr-[10px]">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-                  </svg>
-                </span>
-              </a>
-              <a
-                href="javascript:void(0)"
-                class="bg-dark dark:bg-dark-2 border-dark dark:border-dark-2 border rounded-md inline-flex items-center justify-center py-3 px-3 text-center text-base font-medium text-white hover:bg-body-color hover:border-body-color disabled:bg-gray-3 disabled:border-gray-3 disabled:text-dark-5"
-              >
-                <span class="pr-[10px]">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 0 1-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z" />
-                  </svg>
-                </span>
-              </a>
+            <div className={`p-4 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} border-b flex items-center justify-between`}>
+              <div className="flex items-center">
+                <img src={selectedContact.avatar} alt={selectedContact.name} className="w-10 h-10 rounded-full" />
+                <div className="ml-3">
+                  <h2 className="font-semibold">{selectedContact.name}</h2>
+                  <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{selectedContact.status}</p>
+                </div>
+              </div>
+              <div className="flex space-x-2">
+                <button className={`p-2 rounded-full ${theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gray-200'}`}>
+                  <Phone size={20} />
+                </button>
+                <button className={`p-2 rounded-full ${theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gray-200'}`}>
+                  <User size={20} />
+                </button>
+                <button className={`p-2 rounded-full ${theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gray-200'}`}>
+                  <Search size={20} />
+                </button>
+              </div>
             </div>
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            <div className={`flex-1 overflow-y-auto p-4 space-y-4 ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-100'}`}>
               {messages.map((message) => (
-                <div
-                  key={message.id}
-                  className={`flex ${message.sent ? 'justify-end' : 'justify-start'}`}
-                >
+                <div key={message.id} className={`flex ${message.sent ? 'justify-end' : 'justify-start'}`}>
                   <div
-                    className={`max-w-xs p-3 rounded-lg ${message.sent
-                      ? theme === 'dark'
-                        ? 'bg-blue-600'
-                        : 'bg-blue-500 text-white'
-                      : theme === 'dark'
-                        ? 'bg-gray-700'
-                        : 'bg-gray-300'
-                      }`}
+                    className={`max-w-xs p-3 rounded-lg ${
+                      message.sent
+                        ? theme === 'dark'
+                          ? 'bg-blue-600'
+                          : 'bg-blue-500 text-white'
+                        : theme === 'dark'
+                        ? 'bg-gray-800'
+                        : 'bg-white'
+                    }`}
                   >
                     {message.text}
                   </div>
@@ -123,21 +115,24 @@ const ChatInterface = () => {
             </div>
 
             {/* Message Input */}
-
-            <form onSubmit={handleSendMessage} className={`p-4 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} border-t flex`}>
-              <DropdownButton />
+            <form onSubmit={handleSendMessage} className={`p-4 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} flex items-center space-x-2`}>
+              <button type="button" className={`p-2 rounded-full ${theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gray-200'}`}>
+                <Paperclip size={20} />
+              </button>
               <input
                 type="text"
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
                 placeholder="Type a message..."
-                className={`flex-1 p-2 rounded-l-lg ${theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-900'
-                  }`}
+                className={`flex-1 p-2 rounded-full ${
+                  theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-900'
+                }`}
               />
               <button
                 type="submit"
-                className={`p-2 rounded-r-lg ${theme === 'dark' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-500 hover:bg-blue-600'
-                  } text-white`}
+                className={`p-2 rounded-full ${
+                  theme === 'dark' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-500 hover:bg-blue-600'
+                } text-white`}
               >
                 <Send size={20} />
               </button>
@@ -156,4 +151,3 @@ const ChatInterface = () => {
 };
 
 export default ChatInterface;
-

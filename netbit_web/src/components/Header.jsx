@@ -1,197 +1,170 @@
-import { useState, useEffect } from 'react'
-import {
-  Dialog,
-  DialogPanel,
-  Disclosure,
-  DisclosureButton,
-  DisclosurePanel,
-  Popover,
-  PopoverButton,
-  PopoverGroup,
-  PopoverPanel,
-} from '@headlessui/react'
-import {
-  Bars3Icon,
-  XMarkIcon,
-  UserGroupIcon,
-  UsersIcon,
-  BanknotesIcon,
-} from '@heroicons/react/24/outline'
-import { ChevronDownIcon } from '@heroicons/react/20/solid'
+import React, { useState, useEffect, useContext } from 'react';
+import { Menu, X, Moon, Sun, User, Home, Bell } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ThemeContext } from '../main';
+import AnimatedLogo from './AnimatedLogo';
 
-const products = [
-  { name: 'На сервере', description: 'У вас большая компания или сообщество?', href: '#', icon: UserGroupIcon },
-  { name: 'В личных сообщениях', description: 'Хотите просто поговорить с другом/близким?', href: '#', icon: UsersIcon },
-]
-const callsToAction = [
-  { name: 'Закиньте нам копеечку :)', href: '#', icon: BanknotesIcon },
-]
+const Header = ({ isLoggedIn }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const { theme, toggleTheme } = useContext(ThemeContext);
+  const [activeTab, setActiveTab] = useState('home');
 
-export default function Header() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [theme, setTheme] = useState('light')
+  const menuItems = [
+    { id: 'home', icon: Home, label: 'Главная' },
+    { id: 'notifications', icon: Bell, label: 'Уведомления' },
+    { id: 'profile', icon: User, label: 'Профиль' },
+  ];
 
-  // Смена темы через LocalStorage
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('theme')
-    if (savedTheme) {
-      setTheme(savedTheme)
-      document.documentElement.classList.toggle('dark', savedTheme === 'dark')
-    }
-  }, [])
-
-  const toggleTheme = () => {
-    const newTheme = theme === 'light' ? 'dark' : 'light'
-    setTheme(newTheme)
-    document.documentElement.classList.toggle('dark', newTheme === 'dark')
-    localStorage.setItem('theme', newTheme)
-  }
+  const variants = {
+    hidden: { opacity: 0, y: -20 },
+    visible: { opacity: 1, y: 0 },
+  };
 
   return (
-    <header className="bg-white dark:bg-[#1f2937] fixed top-0 left-0 w-full h-20 z-50">
-      <nav className="mx-auto flex w-full items-center justify-between p-6 lg:px-8">
-        <div className="flex lg:flex-1">
-          <a href="#" className="-m-1.5 p-1.5">
-            <span className="sr-only">NetBit</span>
-            <img alt="" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600" className="h-8 w-auto" />
-          </a>
-        </div>
-        <div className="flex items-center lg:hidden">
-          <button
-            type="button"
-            onClick={() => setMobileMenuOpen(true)}
-            className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700 dark:text-gray-300"
+    <motion.header 
+      className={`bg-white dark:bg-gray-900 shadow-sm`}
+      initial="hidden"
+      animate="visible"
+      variants={variants}
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+          <motion.div 
+            className="flex-shrink-0 flex items-center"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
-            <span className="sr-only">Open main menu</span>
-            <Bars3Icon aria-hidden="true" className="h-6 w-6" />
-          </button>
-        </div>
-        <PopoverGroup className="hidden lg:flex lg:gap-x-12">
-          <Popover className="relative">
-            <PopoverButton className="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-300">
-              Общаться
-              <ChevronDownIcon aria-hidden="true" className="h-5 w-5 flex-none text-gray-400 dark:text-gray-500" />
-            </PopoverButton>
+            <AnimatedLogo className="h-10 w-auto" />
+          </motion.div>
+          
+          <nav className="hidden md:flex space-x-4">
+            {menuItems.map((item) => (
+              <motion.a
+                key={item.id}
+                href="#"
+                className={`px-3 py-2 rounded-md text-sm font-medium ${
+                  activeTab === item.id
+                    ? 'text-indigo-600 dark:text-indigo-300'
+                    : 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
+                }`}
+                onClick={() => setActiveTab(item.id)}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <item.icon className="inline-block mr-1 h-5 w-5" />
+                {item.label}
+              </motion.a>
+            ))}
+          </nav>
 
-            <PopoverPanel className="absolute -left-8 top-full z-10 mt-3 w-screen max-w-md overflow-hidden rounded-3xl bg-white dark:bg-gray-800 shadow-lg ring-1 ring-gray-900/5 dark:ring-gray-500/10 transition">
-              <div className="p-4">
-                {products.map((item) => (
-                  <div
-                    key={item.name}
-                    className="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-50 dark:hover:bg-gray-700"
-                  >
-                    <div className="flex h-11 w-11 flex-none items-center justify-center rounded-lg bg-gray-50 dark:bg-gray-700 group-hover:bg-white dark:group-hover:bg-gray-600">
-                      <item.icon aria-hidden="true" className="h-6 w-6 text-gray-600 dark:text-gray-300" />
-                    </div>
-                    <div className="flex-auto">
-                      <a href={item.href} className="block font-semibold text-gray-900 dark:text-gray-300">
-                        {item.name}
-                        <span className="absolute inset-0" />
-                      </a>
-                      <p className="mt-1 text-gray-600 dark:text-gray-400">{item.description}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div className="grid grid-cols-1 divide-x divide-gray-900/5 bg-gray-50 dark:bg-gray-700">
-                {callsToAction.map((item) => (
-                  <a
-                    key={item.name}
-                    href={item.href}
-                    className="flex items-center justify-center gap-x-2.5 p-3 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
-                  >
-                    <item.icon aria-hidden="true" className="h-5 w-5 flex-none text-gray-400 dark:text-gray-300" />
-                    {item.name}
-                  </a>
-                ))}
-              </div>
-            </PopoverPanel>
-          </Popover>
-
-          <a href="#" className="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-300">
-            Настройки
-          </a>
-          <a href="#" className="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-300">
-            Магазин
-          </a>
-        </PopoverGroup>
-        <div className="hidden lg:flex lg:flex-1 lg:justify-end items-center">
-          <a href="#" className="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-300">
-            Войти <span aria-hidden="true">&rarr;</span>
-          </a>
-        </div>
-      </nav>
-      <Dialog open={mobileMenuOpen} onClose={setMobileMenuOpen} className="lg:hidden">
-        <div className="fixed inset-0 z-10" />
-        <DialogPanel className="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white dark:bg-[#1f2937] px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
-          <div className="flex items-center justify-between">
-            <a href="#" className="-m-1.5 p-1.5">
-              <span className="sr-only">Your Company</span>
-              <img
-                alt=""
-                src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-                className="h-8 w-auto"
-              />
-            </a>
-            <button
-              type="button"
-              onClick={() => setMobileMenuOpen(false)}
-              className="-m-2.5 rounded-md p-2.5 text-gray-700 dark:text-gray-300"
+          <div className="hidden md:flex items-center space-x-4">
+            <motion.button
+              onClick={toggleTheme}
+              className={`p-2 rounded-full ${
+                theme === 'dark' ? 'bg-gray-800 text-yellow-400' : 'bg-gray-200 text-gray-800'
+              }`}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
             >
-              <span className="sr-only">Close menu</span>
-              <XMarkIcon aria-hidden="true" className="h-6 w-6" />
-            </button>
+              {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            </motion.button>
+
+            {isLoggedIn ? (
+              <motion.div 
+                className="relative"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <button className="p-1 rounded-full bg-indigo-600 text-white">
+                  <User className="h-6 w-6" />
+                </button>
+              </motion.div>
+            ) : (
+              <motion.a
+                href="#"
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                Войти
+              </motion.a>
+            )}
           </div>
-          <div className="mt-6 flow-root">
-            <div className="-my-6 divide-y divide-gray-500/10">
-              <div className="space-y-2 py-6">
-              <Disclosure>
-                <DisclosureButton className="group flex w-full items-center justify-between rounded-lg py-2 pl-3 pr-3.5 text-base font-semibold leading-7 text-gray-900 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
-                  Общаться
-                  <ChevronDownIcon
-                    className={`${
-                      open ? 'rotate-180 transform' : ''
-                    } h-5 w-5 flex-none text-gray-400 dark:text-gray-500`}
-                  />
-                </DisclosureButton>
-                <DisclosurePanel className="mt-2 space-y-2">
-                  {[...products, ...callsToAction].map((item) => (
-                    <Disclosure.Button
-                      key={item.name}
-                      as="a"
-                      href={item.href}
-                      className="block rounded-lg py-2 pl-6 pr-3 text-sm font-semibold leading-7 text-gray-900 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
-                    >  
-                      {item.name}
-                    </Disclosure.Button>
-                  ))}
-                </DisclosurePanel>
-              </Disclosure>
-                <a
+
+          <div className="md:hidden">
+            <motion.button
+              onClick={() => setIsOpen(!isOpen)}
+              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+            >
+              <span className="sr-only">Open main menu</span>
+              {isOpen ? <X className="block h-6 w-6" /> : <Menu className="block h-6 w-6" />}
+            </motion.button>
+          </div>
+        </div>
+      </div>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            className="md:hidden"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="px-2 pt-2 pb-3 space-y-1">
+              {menuItems.map((item) => (
+                <motion.a
+                  key={item.id}
                   href="#"
-                  className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                  className={`block px-3 py-2 rounded-md text-base font-medium ${
+                    activeTab === item.id
+                      ? 'text-indigo-600 dark:text-indigo-300 bg-indigo-50 dark:bg-gray-800'
+                      : 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700'
+                  }`}
+                  onClick={() => {
+                    setActiveTab(item.id);
+                    setIsOpen(false);
+                  }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                 >
-                  Настройки
-                </a>
-                <a
-                  href="#"
-                  className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
-                >
-                  Магазин
-                </a>
-              </div>
-              <div className="py-6">
-                <a
-                  href="#"
-                  className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-gray-900 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
-                >
-                  Войти
-                </a>
-              </div>
+                  <item.icon className="inline-block mr-2 h-5 w-5" />
+                  {item.label}
+                </motion.a>
+              ))}
             </div>
-          </div>
-        </DialogPanel>
-      </Dialog>
-    </header>
-  )
-}
+            <div className="pt-4 pb-3 border-t border-gray-200 dark:border-gray-700">
+              {isLoggedIn ? (
+                <div className="flex items-center px-5">
+                  <div className="flex-shrink-0">
+                    <User className="h-10 w-10 rounded-full bg-indigo-600 p-2 text-white" />
+                  </div>
+                  <div className="ml-3">
+                    <div className="text-base font-medium text-gray-800 dark:text-white">Имя пользователя</div>
+                    <div className="text-sm font-medium text-gray-500 dark:text-gray-400">username@example.com</div>
+                  </div>
+                </div>
+              ) : (
+                <div className="px-5">
+                  <motion.a
+                    href="#"
+                    className="block text-center px-4 py-2 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Войти
+                  </motion.a>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.header>
+  );
+};
+
+export default Header;

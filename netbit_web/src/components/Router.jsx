@@ -7,7 +7,7 @@ const Routers = () => {
   return (
     <div class="flex flex-col max-h-screen overflow-hidden">
     <Router>
-        <Header />
+      <Header isLoggedIn={true} /> 
       <main class="mt-20">
         <Routes>
           <Route path="/">
