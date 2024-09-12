@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const statusOptions = [
-  { id: 'online', name: 'Online', color: 'bg-green-500' },
-  { id: 'busy', name: 'Idle', color: 'bg-yellow-500' },
-  { id: 'do_not_disturb', name: 'Do Not Disturb', color: 'bg-red-500' },
-  { id: 'away', name: 'Away', color: 'bg-gray-500' },
+  { id: 'online', name: 'В сети', color: 'bg-green-500' },
+  { id: 'busy', name: 'Отошёл', color: 'bg-yellow-500' },
+  { id: 'do_not_disturb', name: 'Не беспокоить', color: 'bg-red-500' },
+  { id: 'away', name: 'Не в сети', color: 'bg-gray-500' },
 ];
 
 const StatusSelector = ({ status, setStatus, theme }) => {

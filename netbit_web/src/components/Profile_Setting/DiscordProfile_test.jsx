@@ -9,11 +9,14 @@ import StatusSelector from './StatusSelector';
 const DiscordStyleProfile = () => {
   const [user, setUser] = useState({
     displayName: 'Kazilsky',
-    username: '_kazilsky',
+    'Имя пользователя': '_kazilsky',
+    'usercode': '_kazilsky',
     discriminator: '1234',
-    email: '************@bk.ru',
-    phone: '********8620'
+    'Эл. почта': '************@bk.ru',
+    'Номер телефона': '********8620'
   });
+
+  const fields = ['Имя пользователя', 'Эл. почта', 'Номер телефона'];
 
   const [status, setStatus] = useState('online');
   const { theme } = useContext(ThemeContext);
@@ -29,7 +32,7 @@ const DiscordStyleProfile = () => {
   `}
 >
   <div className="flex justify-between items-center mb-6">
-    <h1 className="text-2xl font-bold">My Account</h1>
+    <h1 className="text-2xl font-bold">Мой аккаунт</h1>
   </div>
   
   <div className="flex items-center mb-6">
@@ -46,21 +49,20 @@ const DiscordStyleProfile = () => {
     <div className="ml-4">
       <h2 className="text-xl font-semibold">{user.displayName}</h2>
       <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-        {user.username}#{user.discriminator}
+        {user.usercode}#{user.discriminator}
       </p>
       <StatusSelector status={status} setStatus={setStatus} theme={theme} />
     </div>
   </div>
 
   <div className="space-y-4">
-    {['Username', 'Email', 'Phone Number'].map((field) => (
-      <div 
-        key={field} 
-        className="flex justify-between items-center"
-      >
+    {fields.map((field) => (
+      <div key={field} className="flex justify-between items-center">
         <span>{field}</span>
         <div className="flex items-center">
-          <span className="mr-2">{user[field.toLowerCase().replace(' ', '')]}</span>
+          <span className="mr-2">
+            {user[field] || 'Нет данных'}
+          </span>
           <motion.button 
             whileTap={{ scale: 0.9 }}
             className={`
@@ -69,13 +71,13 @@ const DiscordStyleProfile = () => {
             `}
           >
             <Edit2 size={16} />
-          </motion.button >
+          </motion.button>
         </div>
       </div>
     ))}
   </div>
 
-  <h2 className="text-xl font-semibold mt-8 mb-4">Password and Authentication</h2>
+  <h2 className="text-xl font-semibold mt-8 mb-4">Пароль и аутентификация</h2>
   <div className="space-y-4">
     <motion.button 
       whileHover={{ scale: 1.05 }}
@@ -85,7 +87,7 @@ const DiscordStyleProfile = () => {
         px-4 py-2 rounded transition-colors duration-200 ease-in-out
       `}
     >
-      Change Password
+      Сменить пароль
     </motion.button>
     {/* <div className="flex justify-between items-center">
       <span>Two-factor Authentication</span>

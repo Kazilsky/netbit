@@ -7,9 +7,7 @@ import { ThemeContext } from './main';
 function App() {
 
   return (
-    <>
-      <Routers />
-    </>
+    <Routers />
   );
 }
 

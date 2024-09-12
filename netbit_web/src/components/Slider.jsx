@@ -4,16 +4,20 @@ import { motion } from 'framer-motion';
 
 const TextScaleSlider = ({ min = 50, max = 200, step = 25, initialValue = 100 }) => {
   const { theme } = useContext(ThemeContext);
+
+  const DownloadValue = localStorage.getItem('NetBitProgramm_448673_Size');
+
+  DownloadValue ? initialValue = DownloadValue : null
+
   const [value, setValue] = useState(initialValue);
   const [tempValue, setTempValue] = useState(initialValue); // Временное значение для ползунка
   const [displayValue, setDisplayValue] = useState(initialValue); // Значение для отображения
-  const [rootFontSize, setRootFontSize] = useState(100); // Начальный размер шрифта
+  const [rootFontSize, setRootFontSize] = useState(0); // Начальный размер шрифта
 
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     setIsVisible(true);
-
     const timeout = setTimeout(() => {
       setIsVisible(false);
     }, 1000);
@@ -31,6 +35,7 @@ const TextScaleSlider = ({ min = 50, max = 200, step = 25, initialValue = 100 })
     setValue(tempValue); // Обновляем окончательное значение
     setDisplayValue(tempValue); // Обновляем отображаемое значение
     updateRootFontSize(tempValue); // Обновляем размер шрифта
+    localStorage.setItem('NetBitProgramm_448673_Size', String(tempValue)); // Сохраняем как строку
   };
 
   const getBackgroundSize = () => {
@@ -45,9 +50,9 @@ const TextScaleSlider = ({ min = 50, max = 200, step = 25, initialValue = 100 })
   }
 
   const updateRootFontSize = (newValue) => {
-    const newFontSize = (16 * newValue) / 100; // Расчет нового размера шрифта
+    const newFontSize = (16 * newValue) / 100; // Расчет нового размера шрифта в пикселях
     setRootFontSize(newFontSize);
-    document.documentElement.style.fontSize = `${newFontSize}px`; // Обновление размера шрифта в корневом элементе
+    document.documentElement.style.fontSize = `${newFontSize}px`; // Обновляем размер шрифта в корневом элементе
   };
 
   useEffect(() => {
