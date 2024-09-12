@@ -13,6 +13,7 @@
     "@headlessui/react": "^2.1.5",
     "@heroicons/react": "^2.1.5",
     "@material-tailwind/react": "^2.1.10",
+    "@xhayper/discord-rpc": "^1.2.0",
     "flowbite": "^2.5.1",
     "flowbite-react": "^0.10.1",
     "framer-motion": "^11.5.4",
