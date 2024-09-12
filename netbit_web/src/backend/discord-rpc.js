@@ -8,7 +8,7 @@ client.on("ready", async () => {
     await client.user?.setActivity({
         state: "Suffering with my life",
         details: "Pain and Suffering",
-        startTimestamp: 15210460800,
+        startTimestamp: Date.now(),
         largeImageKey: "main",
         largeImageText: "me irl"
     });
