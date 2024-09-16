@@ -1,153 +1,194 @@
-import React, { useState, useContext, useRef, useEffect } from 'react';
-import { ThemeContext } from '../../main';
-import { Send, Paperclip, Search, Phone, User } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react'
+import { Search, Send, Paperclip, Smile, Plus } from 'lucide-react'
+import DropdownFileInput from '../../components/Chat/DMChat/DropDownFileInput'
+import DropdownButton from '../../components/Chat/DMChat/DropDownFileInput'
+import DefaultInput from '../../components/Chat/DMChat/DefaultInput'
 
-const ChatInterface = () => {
-  const { theme } = useContext(ThemeContext);
-  const [contacts, setContacts] = useState([
-    { id: 1, name: 'John Doe', avatar: 'https://docs.material-tailwind.com/img/face-2.jpg', status: 'online', lastMessage: 'Hey, how are you?' },
-    { id: 2, name: 'Jane Smith', avatar: 'https://docs.material-tailwind.com/img/face-3.jpg', status: 'offline', lastMessage: 'See you later!' },
-    // Add more contacts as needed
-  ]);
-  const [selectedContact, setSelectedContact] = useState(null);
-  const [messages, setMessages] = useState([]);
-  const [newMessage, setNewMessage] = useState('');
-  const messagesEndRef = useRef(null);
+const Input = React.forwardRef(({ className, ...props }, ref) => {
+  return (
+    <input
+      className={`w-full px-3 py-2 text-sm bg-white dark:bg-gray-700 border border-stroke dark:border-dark-3 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary dark:focus:ring-primary dark:focus:border-primary ${className}`}
+      ref={ref}
+      {...props}
+    />
+  )
+})
 
-  useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [messages]);
+const Button = React.forwardRef(({ className, children, ...props }, ref) => {
+  return (
+    <button
+      className={`px-4 py-2 text-sm font-medium text-white bg-primary rounded-md hover:bg-[#1B44C8] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-gray-800 ${className}`}
+      ref={ref}
+      {...props}
+    >
+      {children}
+    </button>
+  )
+})
+
+const ScrollArea = ({ className, children }) => {
+  return (
+    <div className={`overflow-y-auto ${className}`}>
+      {children}
+    </div>
+  )
+}
+
+const Avatar = ({ src, alt, fallback, className }) => {
+  return (
+    <div className={`relative inline-block ${className}`}>
+      {src ? (
+        <img src={src} alt={alt} className="w-full h-full object-cover rounded-full" />
+      ) : (
+        <div className="w-full h-full flex items-center justify-center bg-gray-300 dark:bg-gray-600 text-gray-600 dark:text-gray-300 rounded-full">
+          {fallback}
+        </div>
+      )}
+    </div>
+  )
+}
+
+export default function DMChat() {
+  const [selectedContact, setSelectedContact] = useState(null)
+  const [message, setMessage] = useState('')
+  const [messages, setMessages] = useState([])
+  const [searchTerm, setSearchTerm] = useState('')
+  const messagesEndRef = useRef(null)
+
+  const contacts = [
+    { id: 1, name: 'Алиса', avatar: '/placeholder.svg?height=40&width=40', status: 'online' },
+    { id: 2, name: 'Боб', avatar: '/placeholder.svg?height=40&width=40', status: 'offline' },
+    { id: 3, name: 'Чарли', avatar: '/placeholder.svg?height=40&width=40', status: 'idle' },
+    { id: 4, name: 'Дэвид', avatar: '/placeholder.svg?height=40&width=40', status: 'dnd' },
+  ]
+
+  const filteredContacts = contacts.filter(contact =>
+    contact.name.toLowerCase().includes(searchTerm.toLowerCase())
+  )
 
   const handleSendMessage = (e) => {
-    e.preventDefault();
-    if (newMessage.trim() !== '') {
-      setMessages([...messages, { id: messages.length + 1, text: newMessage, sent: true }]);
-      setNewMessage('');
+    e.preventDefault()
+    if (message.trim() && selectedContact) {
+      setMessages([...messages, { id: Date.now(), text: message, sender: 'me' }])
+      setMessage('')
     }
-  };
+  }
 
-  const getStatusColor = (status) => {
-    return status === 'online' ? 'bg-green-500' : 'bg-gray-500';
-  };
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }, [messages])
 
   return (
-    <div className={`flex w-screen h-screen ${theme === 'dark' ? 'bg-gray-900 text-gray-100' : 'bg-gray-100 text-gray-900'}`}>
-      {/* Contacts List */}
-      <div className={`w-64 ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-200'} overflow-y-auto`}>
+    <div className="flex h-screen bg-gray-100 dark:bg-dark">
+      {/* Список контактов */}
+      <div className="w-64 bg-white dark:bg-dark-2 border-r border-stroke dark:border-dark-3">
         <div className="p-4">
-          <div className="relative">
-            <input
+          <div className="relative mb-4">
+            <Input
               type="text"
-              placeholder="Search"
-              className={`w-full p-2 pl-8 rounded ${theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-white text-gray-900'}`}
+              placeholder="Поиск"
+              className="pl-10"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <Search className="absolute left-2 top-2.5 h-5 w-5 text-gray-500" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
           </div>
+          <DefaultInput />
         </div>
-        {contacts.map((contact) => (
-          <div
-            key={contact.id}
-            className={`flex items-center p-3 cursor-pointer ${
-              selectedContact === contact ? (theme === 'dark' ? 'bg-gray-700' : 'bg-gray-300') : ''
-            } hover:${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-300'}`}
-            onClick={() => setSelectedContact(contact)}
-          >
-            <div className="relative">
-              <img src={contact.avatar} alt={contact.name} className="w-10 h-10 rounded-full" />
-              <div className={`absolute bottom-0 right-0 w-3 h-3 ${getStatusColor(contact.status)} rounded-full border-2 ${theme === 'dark' ? 'border-gray-800' : 'border-gray-200'}`}></div>
+        <ScrollArea className="h-[calc(100vh-180px)]">
+          {filteredContacts.map((contact) => (
+            <div
+              key={contact.id}
+              className={`flex items-center p-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-dark-3 ${
+                selectedContact?.id === contact.id ? 'bg-gray-200 dark:bg-dark-3' : ''
+              }`}
+              onClick={() => setSelectedContact(contact)}
+            >
+              <Avatar
+                src={contact.avatar}
+                alt={contact.name}
+                fallback={contact.name.charAt(0)}
+                className="h-10 w-10 mr-3"
+              />
+              <div>
+                <div className="font-semibold text-dark dark:text-white">{contact.name}</div>
+                <div className="text-sm text-body-color dark:text-dark-6">
+                  {contact.status === 'online' && <span className="text-green-500">●</span>}
+                  {contact.status === 'offline' && <span className="text-gray-500">●</span>}
+                  {contact.status === 'idle' && <span className="text-yellow-500">●</span>}
+                  {contact.status === 'dnd' && <span className="text-red-500">●</span>}
+                  {' '}{contact.status}
+                </div>
+              </div>
             </div>
-            <div className="ml-3 overflow-hidden">
-              <p className="font-semibold truncate">{contact.name}</p>
-              <p className={`text-sm truncate ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{contact.lastMessage}</p>
-            </div>
-          </div>
-        ))}
+          ))}
+        </ScrollArea>
       </div>
 
-      {/* Chat Area */}
+      {/* Область чата */}
       <div className="flex-1 flex flex-col">
         {selectedContact ? (
           <>
-            {/* Chat Header */}
-            <div className={`p-4 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} border-b flex items-center justify-between`}>
+            {/* Заголовок чата */}
+            <div className="bg-white dark:bg-dark-2 p-4 border-b border-stroke dark:border-dark-3">
               <div className="flex items-center">
-                <img src={selectedContact.avatar} alt={selectedContact.name} className="w-10 h-10 rounded-full" />
-                <div className="ml-3">
-                  <h2 className="font-semibold">{selectedContact.name}</h2>
-                  <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{selectedContact.status}</p>
+                <Avatar
+                  src={selectedContact.avatar}
+                  alt={selectedContact.name}
+                  fallback={selectedContact.name.charAt(0)}
+                  className="h-10 w-10 mr-3"
+                />
+                <div>
+                  <div className="font-semibold text-dark dark:text-white">{selectedContact.name}</div>
+                  <div className="text-sm text-body-color dark:text-dark-6">{selectedContact.status}</div>
                 </div>
-              </div>
-              <div className="flex space-x-2">
-                <button className={`p-2 rounded-full ${theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gray-200'}`}>
-                  <Phone size={20} />
-                </button>
-                <button className={`p-2 rounded-full ${theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gray-200'}`}>
-                  <User size={20} />
-                </button>
-                <button className={`p-2 rounded-full ${theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gray-200'}`}>
-                  <Search size={20} />
-                </button>
               </div>
             </div>
 
-            {/* Messages */}
-            <div className={`flex-1 overflow-y-auto p-4 space-y-4 ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-100'}`}>
-              {messages.map((message) => (
-                <div key={message.id} className={`flex ${message.sent ? 'justify-end' : 'justify-start'}`}>
+            {/* Сообщения */}
+            <ScrollArea className="flex-1 p-4 bg-gray-50 dark:bg-dark">
+              {messages.map((msg) => (
+                <div
+                  key={msg.id}
+                  className={`mb-4 ${msg.sender === 'me' ? 'text-right' : 'text-left'}`}
+                >
                   <div
-                    className={`max-w-xs p-3 rounded-lg ${
-                      message.sent
-                        ? theme === 'dark'
-                          ? 'bg-blue-600'
-                          : 'bg-blue-500 text-white'
-                        : theme === 'dark'
-                        ? 'bg-gray-800'
-                        : 'bg-white'
+                    className={`inline-block p-2 rounded-lg ${
+                      msg.sender === 'me'
+                        ? 'bg-primary text-white'
+                        : 'bg-white dark:bg-dark-2 text-dark dark:text-white'
                     }`}
                   >
-                    {message.text}
+                    {msg.text}
                   </div>
                 </div>
               ))}
               <div ref={messagesEndRef} />
-            </div>
+            </ScrollArea>
 
-            {/* Message Input */}
-            <form onSubmit={handleSendMessage} className={`p-4 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} flex items-center space-x-2`}>
-              <button type="button" className={`p-2 rounded-full ${theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gray-200'}`}>
-                <Paperclip size={20} />
-              </button>
-              <input
-                type="text"
-                value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
-                placeholder="Type a message..."
-                className={`flex-1 p-2 rounded-full ${
-                  theme === 'dark' ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-900'
-                }`}
-              />
-              <button
-                type="submit"
-                className={`p-2 rounded-full ${
-                  theme === 'dark' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-500 hover:bg-blue-600'
-                } text-white`}
-              >
-                <Send size={20} />
-              </button>
+            {/* Ввод сообщения */}
+            <form onSubmit={handleSendMessage} className="bg-white dark:bg-dark-2 p-4 border-t border-stroke dark:border-dark-3">
+              <div className="flex items-center">
+                <DropdownButton />
+                <Input
+                  type="text"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  placeholder="Введите сообщение..."
+                  className="flex-1 mx-2"
+                />
+                <Button type="submit" className="p-2">
+                  <Send className="h-5 w-5" />
+                </Button>
+              </div>
             </form>
           </>
         ) : (
-          <div className="flex-1 flex items-center justify-center">
-            <p className={`text-xl ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-              Select a contact to start chatting
-            </p>
+          <div className="flex-1 flex items-center justify-center text-body-color dark:text-dark-6">
+            Выберите контакт для начала чата
           </div>
         )}
       </div>
     </div>
-  );
-};
-
-export default ChatInterface;
+  )
+}

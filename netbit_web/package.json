@@ -13,6 +13,8 @@
     "@headlessui/react": "^2.1.5",
     "@heroicons/react": "^2.1.5",
     "@material-tailwind/react": "^2.1.10",
+    "@react-three/drei": "^9.112.0",
+    "@react-three/fiber": "^8.17.7",
     "@xhayper/discord-rpc": "^1.2.0",
     "discord.js-selfbot-rpc": "^1.0.1",
     "discord.js-selfbot-v13": "^3.3.0",
@@ -20,11 +22,13 @@
     "flowbite-react": "^0.10.1",
     "framer-motion": "^11.5.4",
     "lucide-react": "^0.439.0",
+    "next-themes": "^0.3.0",
     "react": "^18.3.1",
     "react-avatar": "^5.0.3",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.26.1",
-    "tailgrids": "^2.2.7"
+    "tailgrids": "^2.2.7",
+    "three": "^0.168.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",

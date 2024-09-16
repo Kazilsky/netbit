@@ -1,28 +1,48 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { Menu, X, Moon, Sun, User, Home, Bell } from 'lucide-react';
+import React, { useContext } from 'react';
+import { Menu, X, Moon, Sun, User, Home, MessagesSquare, Github, Settings } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ThemeContext } from '../main';
 import AnimatedLogo from './AnimatedLogo';
+import { useNavigate, useLocation } from 'react-router-dom';
 
-const Header = ({ isLoggedIn }) => {
-  const [isOpen, setIsOpen] = useState(false);
+const Header = ({ isLoggedIn, activeTab, setActiveTab }) => {
+  const [isOpen, setIsOpen] = React.useState(false);
   const { theme, toggleTheme } = useContext(ThemeContext);
-  const [activeTab, setActiveTab] = useState('home');
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  React.useEffect(() => {
+    const path = location.pathname;
+    if (path === '/') setActiveTab('home');
+    else if (path.includes('dmchat')) setActiveTab('notifications');
+    else if (path.includes('setting')) setActiveTab('profile');
+    else if (path.includes('help')) setActiveTab('github');
+  }, [location, setActiveTab]);
 
   const menuItems = [
-    { id: 'home', icon: Home, label: 'Главная' },
-    { id: 'notifications', icon: Bell, label: 'Уведомления' },
-    { id: 'profile', icon: User, label: 'Профиль' },
+    { id: 'home', icon: Home, label: 'Главная', href: '/' },
+    { id: 'notifications', icon: MessagesSquare, label: 'Общаться', href: '/dmchat' },
+    { id: 'profile', icon: Settings, label: 'Настройки', href: '/setting' },
+    { id: 'github', icon: Github, label: 'Помощь', href: 'https://github.com/Kazilsky/netbit', target: '_blank' },
   ];
 
+  const handleNavigation = (item) => {
+    if (item.href.startsWith('http') && item.href.startsWith('https')) {
+      window.open(item.href, '_blank');
+    } else {
+      setActiveTab(item.id);
+      navigate(item.href);
+    }
+  };
+
   const variants = {
-    hidden: { opacity: 0, y: -20 },
+    hidden: { opacity: 0, y: 0 },
     visible: { opacity: 1, y: 0 },
   };
 
   return (
     <motion.header 
-      className={`bg-white dark:bg-gray-900 shadow-sm`}
+      className={`bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 dark:from-gray-900 dark:to-gray-800 shadow-lg rounded-b-lg`}
       initial="hidden"
       animate="visible"
       variants={variants}
@@ -34,36 +54,34 @@ const Header = ({ isLoggedIn }) => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            <AnimatedLogo className="h-10 w-auto" />
+            <AnimatedLogo />
           </motion.div>
           
           <nav className="hidden md:flex space-x-4">
             {menuItems.map((item) => (
-              <motion.a
+              <motion.button
                 key={item.id}
-                href="#"
-                className={`px-3 py-2 rounded-md text-sm font-medium ${
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ease-in-out ${
                   activeTab === item.id
-                    ? 'text-indigo-600 dark:text-indigo-300'
-                    : 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
+                    ? 'text-white bg-indigo-600 dark:bg-indigo-800'
+                    : 'text-gray-100 dark:text-gray-300 hover:bg-white hover:bg-opacity-20 dark:hover:bg-opacity-10'
                 }`}
-                onClick={() => setActiveTab(item.id)}
+                onClick={() => handleNavigation(item)}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <item.icon className="inline-block mr-1 h-5 w-5" />
+                <item.icon className="inline-block mr-2 h-5 w-5" />
                 {item.label}
-              </motion.a>
+              </motion.button>
             ))}
           </nav>
 
           <div className="hidden md:flex items-center space-x-4">
             <motion.button
               onClick={toggleTheme}
-              className={`p-2 rounded-full ${
+              className={`p-2 rounded-full transition-transform transform ${
                 theme === 'dark' ? 'bg-gray-800 text-yellow-400' : 'bg-gray-200 text-gray-800'
-              }`}
-              whileHover={{ scale: 1.1 }}
+              } hover:scale-110`}
               whileTap={{ scale: 0.9 }}
             >
               {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
@@ -75,26 +93,24 @@ const Header = ({ isLoggedIn }) => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <button className="p-1 rounded-full bg-indigo-600 text-white">
+                <button className="p-2 rounded-full bg-indigo-600 text-white shadow-lg">
                   <User className="h-6 w-6" />
                 </button>
               </motion.div>
             ) : (
-              <motion.a
-                href="#"
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
-                whileHover={{ scale: 1.05 }}
+              <motion.button
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 shadow-lg transition-transform transform hover:scale-105"
                 whileTap={{ scale: 0.95 }}
               >
                 Войти
-              </motion.a>
+              </motion.button>
             )}
           </div>
 
           <div className="md:hidden">
             <motion.button
               onClick={() => setIsOpen(!isOpen)}
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
+              className="inline-flex items-center justify-center p-2 rounded-md text-white bg-indigo-500 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
             >
@@ -108,7 +124,7 @@ const Header = ({ isLoggedIn }) => {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className="md:hidden"
+            className="md:hidden bg-gray-50 dark:bg-gray-900 rounded-lg shadow-lg"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
@@ -116,16 +132,15 @@ const Header = ({ isLoggedIn }) => {
           >
             <div className="px-2 pt-2 pb-3 space-y-1">
               {menuItems.map((item) => (
-                <motion.a
+                <motion.button
                   key={item.id}
-                  href="#"
-                  className={`block px-3 py-2 rounded-md text-base font-medium ${
+                  className={`block w-full text-left px-4 py-2 rounded-md text-base font-medium ${
                     activeTab === item.id
                       ? 'text-indigo-600 dark:text-indigo-300 bg-indigo-50 dark:bg-gray-800'
                       : 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700'
                   }`}
                   onClick={() => {
-                    setActiveTab(item.id);
+                    handleNavigation(item);
                     setIsOpen(false);
                   }}
                   whileHover={{ scale: 1.05 }}
@@ -133,32 +148,8 @@ const Header = ({ isLoggedIn }) => {
                 >
                   <item.icon className="inline-block mr-2 h-5 w-5" />
                   {item.label}
-                </motion.a>
+                </motion.button>
               ))}
-            </div>
-            <div className="pt-4 pb-3 border-t border-gray-200 dark:border-gray-700">
-              {isLoggedIn ? (
-                <div className="flex items-center px-5">
-                  <div className="flex-shrink-0">
-                    <User className="h-10 w-10 rounded-full bg-indigo-600 p-2 text-white" />
-                  </div>
-                  <div className="ml-3">
-                    <div className="text-base font-medium text-gray-800 dark:text-white">Имя пользователя</div>
-                    <div className="text-sm font-medium text-gray-500 dark:text-gray-400">username@example.com</div>
-                  </div>
-                </div>
-              ) : (
-                <div className="px-5">
-                  <motion.a
-                    href="#"
-                    className="block text-center px-4 py-2 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    Войти
-                  </motion.a>
-                </div>
-              )}
             </div>
           </motion.div>
         )}
