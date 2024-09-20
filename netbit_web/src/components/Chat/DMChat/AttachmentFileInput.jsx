@@ -50,8 +50,8 @@ const FileInput = ({ label }) => {
                 </svg>
               </span>
               <span className='text-base text-body-color dark:text-dark-6'>
-                Drag &amp; drop or
-                <span className='text-primary underline'> browse </span>
+                Перетащите сюда файл или 
+                <span className='text-primary'> найдите в проводнике </span>
               </span>
             </div>
           </label>

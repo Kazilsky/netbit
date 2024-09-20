@@ -27,7 +27,7 @@ const MainContent = () => {
         <Route path="/" element={<PageWrapper><h1>Главная страница</h1></PageWrapper>} />
         <Route path="/setting" element={<PageWrapper><SettingsList /></PageWrapper>} />
         <Route path="/dmchat" element={<PageWrapper><DMChat /></PageWrapper>} />
-        <Route path="/help" element={<PageWrapper><h1>ЭПИК РУИНА БЛ</h1></PageWrapper>} />
+        <Route path="/help" element={<PageWrapper><h1>ЭПИК РУИНА РАЗБАНЬ ДОКА</h1></PageWrapper>} />
       </Routes>
     </AnimatePresence>
   );

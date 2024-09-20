@@ -20,7 +20,7 @@ const Header = ({ isLoggedIn, activeTab, setActiveTab }) => {
   }, [location, setActiveTab]);
 
   const menuItems = [
-    { id: 'home', icon: Home, label: 'Главная', href: '/' },
+    // { id: 'home', icon: Home, label: 'Главная', href: '/' },
     { id: 'notifications', icon: MessagesSquare, label: 'Общаться', href: '/dmchat' },
     { id: 'profile', icon: Settings, label: 'Настройки', href: '/setting' },
     { id: 'github', icon: Github, label: 'Помощь', href: 'https://github.com/Kazilsky/netbit', target: '_blank' },
@@ -63,7 +63,7 @@ const Header = ({ isLoggedIn, activeTab, setActiveTab }) => {
                 key={item.id}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ease-in-out ${
                   activeTab === item.id
-                    ? 'text-white bg-indigo-600 dark:bg-indigo-800'
+                    ? 'text-white bg-indigo-600 dark:bg-blue-800'
                     : 'text-gray-100 dark:text-gray-300 hover:bg-white hover:bg-opacity-20 dark:hover:bg-opacity-10'
                 }`}
                 onClick={() => handleNavigation(item)}
