@@ -1,9 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react'
-import { Search, Send, Paperclip, Smile, Plus } from 'lucide-react'
-import api from '../../utils/api'  // Импортируем настроенный экземпляр axios
 
+import React, { useState, useRef, useEffect } from 'react'
+import { Search, Send } from 'lucide-react'
 import DropdownButton from '../../components/Chat/DMChat/DropDownFileInput'
 import DefaultInput from '../../components/Chat/DMChat/DefaultInput'
+import axios from 'axios'
 
 const Input = React.forwardRef(({ className, ...props }, ref) => {
   return (
@@ -67,13 +67,9 @@ export default function DMChat() {
     }
   }, [selectedContact])
 
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }, [messages])
-
   const fetchContacts = async () => {
     try {
-      const response = await api.get('/contacts')
+      const response = await axios.get('http://localhost:3001/api/contacts')
       setContacts(response.data)
     } catch (error) {
       console.error('Error fetching contacts:', error)
@@ -82,13 +78,8 @@ export default function DMChat() {
 
   const fetchMessages = async (contactId) => {
     try {
-      const response = await api.get(`/messages/${contactId}`)
-      setMessages(response.data.map(msg => ({
-        id: msg.id,
-        text: msg.text,
-        sender: msg.sender_id === selectedContact.id ? 'them' : 'me',
-        created_at: msg.created_at
-      })))
+      const response = await axios.get(`http://localhost:3001/api/messages/${contactId}`)
+      setMessages(response.data)
     } catch (error) {
       console.error('Error fetching messages:', error)
     }
@@ -98,16 +89,12 @@ export default function DMChat() {
     e.preventDefault()
     if (message.trim() && selectedContact) {
       try {
-        const response = await api.post('/messages', {
+        const response = await axios.post('http://localhost:3001/api/messages', {
           contactId: selectedContact.id,
-          text: message.trim()
+          text: message,
+          sender: 'me'
         })
-        setMessages([...messages, { 
-          id: response.data.id, 
-          text: response.data.text, 
-          sender: 'me',
-          created_at: response.data.created_at
-        }])
+        setMessages([...messages, response.data])
         setMessage('')
       } catch (error) {
         console.error('Error sending message:', error)
@@ -118,6 +105,10 @@ export default function DMChat() {
   const filteredContacts = contacts.filter(contact =>
     contact.name.toLowerCase().includes(searchTerm.toLowerCase())
   )
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }, [messages])
 
   return (
     <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
@@ -134,7 +125,7 @@ export default function DMChat() {
             />
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
           </div>
-          <DefaultInput />
+          <DefaultInput onAddContact={fetchContacts} />
         </div>
         <ScrollArea className="h-[calc(100vh-180px)]">
           {filteredContacts.map((contact) => (

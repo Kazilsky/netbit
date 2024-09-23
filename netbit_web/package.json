@@ -16,6 +16,7 @@
     "@react-three/drei": "^9.112.0",
     "@react-three/fiber": "^8.17.7",
     "@xhayper/discord-rpc": "^1.2.0",
+    "axios": "^1.7.7",
     "discord.js-selfbot-rpc": "^1.0.1",
     "discord.js-selfbot-v13": "^3.3.0",
     "flowbite": "^2.5.1",

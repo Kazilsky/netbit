@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Menu, X, Moon, Sun, User, Home, MessagesSquare, Github, Settings } from 'lucide-react';
+import { Menu, X, Moon, Sun, User, Home, MessagesSquare, Github, Settings, HandCoins } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ThemeContext } from '../main';
 import AnimatedLogo from './AnimatedLogo';
@@ -23,7 +23,8 @@ const Header = ({ isLoggedIn, activeTab, setActiveTab }) => {
     // { id: 'home', icon: Home, label: 'Главная', href: '/' },
     { id: 'notifications', icon: MessagesSquare, label: 'Общаться', href: '/dmchat' },
     { id: 'profile', icon: Settings, label: 'Настройки', href: '/setting' },
-    { id: 'github', icon: Github, label: 'Помощь', href: 'https://github.com/Kazilsky/netbit', target: '_blank' },
+    { id: 'donate', icon: HandCoins, label: 'Задонатьте нам', href: '/', target: '_blank' },
+    { id: 'github', icon: Github, label: 'Репозиторий', href: 'https://github.com/Kazilsky/netbit', target: '_blank' },
   ];
 
   const handleNavigation = (item) => {
