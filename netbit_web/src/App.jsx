@@ -6,7 +6,6 @@ import { ThemeContext } from './main';
 import DiscordRPC from './backend/discord-rpc';
 
 function App() {
-<DiscordRPC/>
   
   return (
     <Routers />

@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import { ThemeContext } from '../main';
 import { motion } from 'framer-motion';
 
-const TextScaleSlider = ({ min = 50, max = 200, step = 25, initialValue = 100 }) => {
+const TextScaleSlider = ({ min = 80, max = 150, step = 10, initialValue = 100 }) => {
   const { theme } = useContext(ThemeContext);
 
   const DownloadValue = localStorage.getItem('NetBitProgramm_448673_Size');

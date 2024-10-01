@@ -1,213 +1,199 @@
-import React, { useState, useRef, useEffect } from 'react'
-import { Search, Send, Paperclip, Smile, Plus } from 'lucide-react'
-import api from '../../utils/api'  // Импортируем настроенный экземпляр axios
+import React, { useState, useRef, useEffect } from 'react';
+import { Search, Send, Paperclip, Smile, Plus, Trash2 } from 'lucide-react';
+import api, { getUsers, initializeSocket, sendMessage, deleteMessage, markMessageAsRead } from '../../utils/api';
+import DropdownButton from '../../components/Chat/DMChat/DropDownFileInput';
+import ScrollToBottom from 'react-scroll-to-bottom';
 
-import DropdownButton from '../../components/Chat/DMChat/DropDownFileInput'
-import DefaultInput from '../../components/Chat/DMChat/DefaultInput'
+const Input = React.forwardRef(({ className, ...props }, ref) => (
+  <input
+    className={`w-full px-4 py-2 text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition shadow-sm ${className}`}
+    ref={ref}
+    {...props}
+  />
+));
 
-const Input = React.forwardRef(({ className, ...props }, ref) => {
-  return (
-    <input
-      className={`w-full px-4 py-2 text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition shadow-sm ${className}`}
-      ref={ref}
-      {...props}
-    />
-  )
-})
+const Button = React.forwardRef(({ className, children, ...props }, ref) => (
+  <button
+    className={`px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition shadow-md ${className}`}
+    ref={ref}
+    {...props}
+  >
+    {children}
+  </button>
+));
 
-const Button = React.forwardRef(({ className, children, ...props }, ref) => {
-  return (
-    <button
-      className={`px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition shadow-md ${className}`}
-      ref={ref}
-      {...props}
-    >
-      {children}
-    </button>
-  )
-})
+const ScrollArea = ({ className, children }) => (
+  <div className={`overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 ${className}`}>
+    {children}
+  </div>
+);
 
-const ScrollArea = ({ className, children }) => {
-  return (
-    <div className={`overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 ${className}`}>
-      {children}
-    </div>
-  )
-}
-
-const Avatar = ({ src, alt, fallback, className }) => {
-  return (
-    <div className={`relative inline-block ${className}`}>
-      {src ? (
-        <img src={src} alt={alt} className="w-full h-full object-cover rounded-full shadow-md" />
-      ) : (
-        <div className="w-full h-full flex items-center justify-center bg-gray-300 dark:bg-gray-600 text-gray-600 dark:text-gray-300 rounded-full shadow-md">
-          {fallback}
-        </div>
-      )}
-    </div>
-  )
-}
+const Avatar = ({ src, alt, fallback, className }) => (
+  <div className={`relative inline-block ${className}`}>
+    {src ? (
+      <img src={src} alt={alt} className="w-full h-full object-cover rounded-full shadow-md" />
+    ) : (
+      <div className="w-full h-full flex items-center justify-center bg-gray-300 dark:bg-gray-600 text-gray-600 dark:text-gray-300 rounded-full shadow-md">
+        {fallback}
+      </div>
+    )}
+  </div>
+);
 
 export default function DMChat() {
-  const [selectedContact, setSelectedContact] = useState(null)
-  const [message, setMessage] = useState('')
-  const [messages, setMessages] = useState([])
-  const [searchTerm, setSearchTerm] = useState('')
-  const [contacts, setContacts] = useState([])
-  const messagesEndRef = useRef(null)
+  const [selectedContact, setSelectedContact] = useState(null);
+  const [message, setMessage] = useState('');
+  const [messages, setMessages] = useState([]);
+  const [contacts, setContacts] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const messagesEndRef = useRef(null);
 
   useEffect(() => {
-    fetchContacts()
-  }, [])
+    fetchContacts();
+    const cleanupSocket = initializeSocket(handleNewMessage, handleMessageRead);
+    return () => {
+      cleanupSocket();
+    };
+  }, []);
 
   useEffect(() => {
-    if (selectedContact) {
-      fetchMessages(selectedContact.id)
-    }
-  }, [selectedContact])
+    if (selectedContact) fetchMessages(selectedContact.id);
+  }, [selectedContact]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }, [messages])
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  const handleNewMessage = (data) => {
+    setMessages(prevMessages => [...prevMessages, data]);
+  };
+
+  const handleMessageRead = (data) => {
+    setMessages(prevMessages => prevMessages.map(msg => 
+      msg.id === data.messageId ? { ...msg, read: true } : msg
+    ));
+  };
 
   const fetchContacts = async () => {
-    try {
-      const response = await api.get('/contacts')
-      setContacts(response.data)
-    } catch (error) {
-      console.error('Error fetching contacts:', error)
-    }
-  }
+    const contactsData = await getUsers();
+    setContacts(contactsData);
+  };
 
   const fetchMessages = async (contactId) => {
-    try {
-      const response = await api.get(`/messages/${contactId}`)
-      setMessages(response.data.map(msg => ({
-        id: msg.id,
-        text: msg.text,
-        sender: msg.sender_id === selectedContact.id ? 'them' : 'me',
-        created_at: msg.created_at
-      })))
-    } catch (error) {
-      console.error('Error fetching messages:', error)
-    }
-  }
+    const response = await api.get(`/messages/${contactId}`);
+    setMessages(response.data);
+  };
 
   const handleSendMessage = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
     if (message.trim() && selectedContact) {
-      try {
-        const response = await api.post('/messages', {
-          contactId: selectedContact.id,
-          text: message.trim()
-        })
-        setMessages([...messages, { 
-          id: response.data.id, 
-          text: response.data.text, 
-          sender: 'me',
-          created_at: response.data.created_at
-        }])
-        setMessage('')
-      } catch (error) {
-        console.error('Error sending message:', error)
-      }
+      const newMessage = {
+        text: message.trim(),
+        recipientId: selectedContact.id,
+      };
+      sendMessage(newMessage);
+      setMessage('');
     }
-  }
+  };
+
+  const handleDeleteMessage = (messageId) => {
+    if (socket) {
+      socket.emit('deleteMessage', messageId);
+    } else {
+      console.error('Socket connection not established');
+    }
+  };
+  
+  const handleMarkAsRead = (messageId) => {
+    markMessageAsRead(messageId);
+  };
 
   const filteredContacts = contacts.filter(contact =>
-    contact.name.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+    contact.username.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
-      {/* Список контактов */}
+      {/* Contact and Group List */}
       <div className="w-80 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 shadow-lg">
         <div className="p-4">
-          <div className="relative mb-4">
-            <Input
-              type="text"
-              placeholder="Поиск"
-              className="pl-10"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-          </div>
-          <DefaultInput />
+          <Input
+            type="text"
+            placeholder="Поиск"
+            className="pl-10"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
         <ScrollArea className="h-[calc(100vh-180px)]">
-          {filteredContacts.map((contact) => (
+          {filteredContacts.map(contact => (
             <div
               key={contact.id}
-              className={`flex items-center p-3 cursor-pointer transition hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg ${
-                selectedContact?.id === contact.id ? 'bg-gray-200 dark:bg-gray-700' : ''
-              }`}
+              className={`flex items-center p-3 cursor-pointer transition hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg ${selectedContact?.id === contact.id ? 'bg-gray-200 dark:bg-gray-700' : ''}`}
               onClick={() => setSelectedContact(contact)}
             >
               <Avatar
                 src={contact.avatar}
-                alt={contact.name}
-                fallback={contact.name.charAt(0)}
+                alt={contact.username || "без имени"}
+                // fallback={contact.name.charAt(0)}
                 className="h-12 w-12 mr-3"
               />
               <div>
-                <div className="font-semibold text-gray-800 dark:text-white">{contact.name}</div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                  {contact.status === 'В сети' && <span className="text-green-500">●</span>}
-                  {contact.status === 'Не в сети' && <span className="text-gray-500">●</span>}
-                  {contact.status === 'Отошёл' && <span className="text-yellow-500">●</span>}
-                  {contact.status === 'Не беспокоить' && <span className="text-red-500">●</span>}
-                  {' '}{contact.status}
-                </div>
+                <div className="font-semibold text-gray-800 dark:text-white">{contact.username}</div>
+                <div className="text-sm text-gray-500 dark:text-gray-400">{contact.status}</div>
               </div>
             </div>
           ))}
         </ScrollArea>
       </div>
 
-      {/* Область чата */}
+      {/* Chat Area */}
       <div className="flex-1 flex flex-col">
         {selectedContact ? (
           <>
-            {/* Заголовок чата */}
+            {/* Header */}
             <div className="bg-white dark:bg-gray-800 p-4 border-b border-gray-200 dark:border-gray-700 shadow-md">
               <div className="flex items-center">
                 <Avatar
-                  src={selectedContact.avatar}
-                  alt={selectedContact.name}
-                  fallback={selectedContact.name.charAt(0)}
+                  src={selectedContact?.avatar}
+                  alt={selectedContact?.username}
+                  fallback={selectedContact?.name?.charAt(0)}
                   className="h-12 w-12 mr-3"
                 />
                 <div>
-                  <div className="font-semibold text-gray-800 dark:text-white">{selectedContact.name}</div>
-                  <div className="text-sm text-gray-500 dark:text-gray-400">{selectedContact.status}</div>
+                  <div className="font-semibold text-gray-800 dark:text-white">
+                    {selectedContact?.username}
+                  </div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400">
+                    {selectedContact?.status}
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Сообщения */}
-            <ScrollArea className="flex-1 p-4 bg-gray-50 dark:bg-gray-900">
-              {messages.map((msg) => (
-                <div
-                  key={msg.id}
-                  className={`mb-4 ${msg.sender === 'me' ? 'text-right' : 'text-left'}`}
-                >
-                  <div
-                    className={`inline-block p-3 rounded-2xl shadow-md transition ${
-                      msg.sender === 'me'
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200'
-                    }`}
-                  >
+            {/* Messages */}
+            <ScrollToBottom className="messages-container max-h-full overflow-y-auto border-2 border-gray-300 p-4 shadow-md rounded-lg bg-white">
+              {messages.map(msg => (
+                <div key={msg.id} className={`mb-4 ${msg.sender_id === localStorage.getItem('userId') ? 'text-right' : 'text-left'}`}>
+                  <div className={`inline-block p-3 rounded-2xl shadow-md transition ${msg.sender_id === localStorage.getItem('userId') ? 'bg-blue-600 text-white' : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200'}`}>
                     {msg.text}
+                    {msg.sender_id === localStorage.getItem('userId') && (
+                      <button onClick={() => handleDeleteMessage(msg.id)} className="ml-2 text-red-500 hover:text-red-700">
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    )}
+                    {msg.sender_id !== localStorage.getItem('userId') && !msg.read_at && (
+                      <button onClick={() => handleMarkAsRead(msg.id)} className="ml-2 text-gray-500 hover:text-gray-700">
+                        Прочитано
+                      </button>
+                    )}
                   </div>
                 </div>
               ))}
-              <div ref={messagesEndRef} />
-            </ScrollArea>
+            </ScrollToBottom>
 
-            {/* Ввод сообщения */}
+            {/* Message Input */}
             <form onSubmit={handleSendMessage} className="bg-white dark:bg-gray-800 p-4 border-t border-gray-200 dark:border-gray-700 shadow-lg">
               <div className="flex items-center">
                 <DropdownButton />
@@ -226,10 +212,10 @@ export default function DMChat() {
           </>
         ) : (
           <div className="flex-1 flex items-center justify-center text-gray-400 dark:text-gray-600">
-            Выберите контакт для начала чата
+            Выберите контакт или группу для начала чата
           </div>
         )}
       </div>
     </div>
-  )
+  );
 }

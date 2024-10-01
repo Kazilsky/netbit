@@ -43,7 +43,7 @@ const Header = ({ isLoggedIn, activeTab, setActiveTab }) => {
 
   return (
     <motion.header 
-      className={`bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 dark:from-gray-900 dark:to-gray-800 shadow-lg rounded-b-lg`}
+      className={`bg-gradient-to-r from-blue-600 via-blue-500 to-blue-600 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 shadow-lg rounded-b-3xl`}
       initial="hidden"
       animate="visible"
       variants={variants}
@@ -64,8 +64,8 @@ const Header = ({ isLoggedIn, activeTab, setActiveTab }) => {
                 key={item.id}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ease-in-out ${
                   activeTab === item.id
-                    ? 'text-white bg-indigo-600 dark:bg-blue-800'
-                    : 'text-gray-100 dark:text-gray-300 hover:bg-white hover:bg-opacity-20 dark:hover:bg-opacity-10'
+                    ? 'text-white bg-blue-700 dark:bg-blue-600'
+                    : 'text-gray-700 bg-gray-100 dark:bg-black dark:text-white hover:bg-white hover:bg-opacity-70 dark:hover:bg-opacity-10'
                 }`}
                 onClick={() => handleNavigation(item)}
                 whileHover={{ scale: 1.05 }}
@@ -88,30 +88,13 @@ const Header = ({ isLoggedIn, activeTab, setActiveTab }) => {
               {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </motion.button>
 
-            {isLoggedIn ? (
-              <motion.div 
-                className="relative"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <button className="p-2 rounded-full bg-indigo-600 text-white shadow-lg">
-                  <User className="h-6 w-6" />
-                </button>
-              </motion.div>
-            ) : (
-              <motion.button
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 shadow-lg transition-transform transform hover:scale-105"
-                whileTap={{ scale: 0.95 }}
-              >
-                Войти
-              </motion.button>
-            )}
+            
           </div>
 
           <div className="md:hidden">
             <motion.button
               onClick={() => setIsOpen(!isOpen)}
-              className="inline-flex items-center justify-center p-2 rounded-md text-white bg-indigo-500 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
+              className="inline-flex items-center justify-center p-2 rounded-md text-white bg-blue-300 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-200"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
             >
@@ -137,7 +120,7 @@ const Header = ({ isLoggedIn, activeTab, setActiveTab }) => {
                   key={item.id}
                   className={`block w-full text-left px-4 py-2 rounded-md text-base font-medium ${
                     activeTab === item.id
-                      ? 'text-indigo-600 dark:text-indigo-300 bg-indigo-50 dark:bg-gray-800'
+                      ? 'text-blue-500 dark:blue-300 bg-blue-50 dark:bg-gray-800'
                       : 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700'
                   }`}
                   onClick={() => {

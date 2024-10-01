@@ -1,11 +1,13 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import { AnimatePresence, motion } from 'framer-motion';
+
 import SettingsList from "../pages/Settings/Settings";
 import DMChat from "../pages/Chat/DMChat";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
-import { AnimatePresence, motion } from 'framer-motion';
+import AuthPage from '../pages/Auth/Auth';
 
 const PageWrapper = ({ children }) => (
   <motion.div
@@ -35,10 +37,22 @@ const MainContent = () => {
 
 const Routers = () => {
   const [activeTab, setActiveTab] = useState('home');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('NetBitProgramm_419074_AccessToken');
+    if (token) {
+      setIsLoggedIn(true);
+    }
+  }, []);
+  const handleLoginSuccess = () => {
+    setIsLoggedIn(true);
+  };
 
   return (
     <Router>
-      <div className="flex flex-col h-screen w-screen overflow-hidden">
+    {isLoggedIn ? (
+      <div className="flex flex-col min-h-screen max-h-screen w-screen overflow-hidden">
         <Header isLoggedIn={true} activeTab={activeTab} setActiveTab={setActiveTab} />
         <div className="flex flex-1 overflow-hidden">
           <Sidebar />
@@ -47,6 +61,9 @@ const Routers = () => {
           </main>
         </div>
       </div>
+    ) : (
+      <AuthPage onLoginSuccess={handleLoginSuccess} />
+    )}
     </Router>
   );
 };

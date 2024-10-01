@@ -35,7 +35,7 @@ const ServerList = () => {
   ];
 
   return (
-    <div className="w-20 flex z-50 flex-col bg-gray-900 text-white shadow-lg">
+    <div className="w-20 flex z-50 flex-col text-gray-700 bg-gray-100 dark:bg-gray-900 dark:text-white shadow-lg">
 
       {/* Menu Items */}
       <div className="flex flex-col items-center mt-2 mb-4">

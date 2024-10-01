@@ -13,7 +13,7 @@ import { Slider } from '@material-tailwind/react';
 const SettingsOption = ({ icon, label, active, onClick }) => (
   <div
     className={`flex items-center p-3 rounded-md cursor-pointer transition-all duration-200 ${active
-        ? 'bg-blue-500 text-white'
+        ? 'bg-blue-600 text-white'
         : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
       }`}
     onClick={onClick}
@@ -111,9 +111,6 @@ const AppearanceSettings = () => {
       <h2 className="text-2xl text-center font-bold text-gray-900 dark:text-white mb-4">
         Внешний вид
       </h2>
-      <div className="flex items-center justify-center">
-        <ThemeToggle />
-      </div>
       <div className="flex flex-col items-start justify-start">
         <TextRangeSlider />
       </div>
@@ -128,6 +125,9 @@ const UpdatesSettings = () => (
       Обновления
     </h2>
     {/* Добавьте настройки уведомлений здесь */}
+      <h2 className="text-xl text-center text-gray-900 dark:text-white mb-4">
+        Здесь что-нибудь об обновлениях будет в будущем, окей?
+      </h2>
   </div>
 );
 
@@ -136,7 +136,10 @@ const LanguageSettings = () => (
     <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
       Язык
     </h2>
-    {/* Добавьте настройки уведомлений здесь */}
+    {/* Добавьте настройки языка здесь */}
+    <h2 className="text-xl text-center text-gray-900 dark:text-white mb-4">
+        Переводы на другие языки будут на релизе NetBit.
+      </h2>
   </div>
 );
 
@@ -145,7 +148,10 @@ const AdvancedSettings = () => (
     <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
       Расширенные
     </h2>
-    {/* Добавьте настройки уведомлений здесь */}
+    {/* Добавьте расширенные настройки здесь */}
+      <h2 className="text-xl text-center font text-gray-900 dark:text-white mb-4">
+        Будет API, будет и режим разработчика.
+      </h2>
   </div>
 );
 
