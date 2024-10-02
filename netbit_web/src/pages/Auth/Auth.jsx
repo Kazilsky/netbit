@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { login } from '../../utils/api';
+import { login } from '../../utils/api/api';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -8,17 +8,16 @@ const LoginPage = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
+  
     try {
       const response = await login({ email, password });
-      localStorage.setItem('NetBitProgramm_419074_AccessToken', response.accessToken);
-      localStorage.setItem('NetBitProgramm_419074_RefreshToken', response.refreshToken);
       window.location.href = '/chat'; // перенаправляем в чат после успешной авторизации
     } catch (error) {
       console.error('Ошибка при логине:', error);
       setError('Неправильный email или пароль.');
     }
   };
+  
 
   return (
     <div className="h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900">

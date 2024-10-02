@@ -38,12 +38,14 @@ const MainContent = () => {
 const Routers = () => {
   const [activeTab, setActiveTab] = useState('home');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  
 
   useEffect(() => {
     const token = localStorage.getItem('NetBitProgramm_419074_AccessToken');
+    const refreshToken = localStorage.getItem('NetBitProgramm_419074_RefreshToken');
     if (token) {
       setIsLoggedIn(true);
-    }
+    } 
   }, []);
   const handleLoginSuccess = () => {
     setIsLoggedIn(true);
