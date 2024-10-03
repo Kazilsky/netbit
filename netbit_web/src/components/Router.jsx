@@ -7,7 +7,7 @@ import SettingsList from "../pages/Settings/Settings";
 import DMChat from "../pages/Chat/DMChat";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
-import AuthPage from '../pages/Auth/Auth';
+import AuthPage from '../pages/Auth/AuthPage';
 
 const PageWrapper = ({ children }) => (
   <motion.div
