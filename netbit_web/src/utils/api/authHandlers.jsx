@@ -8,6 +8,7 @@ export const authHandlers = (api) => ({
       localStorage.setItem('NetBitProgramm_419074_AccessToken', accessToken);
       localStorage.setItem('NetBitProgramm_419074_RefreshToken', refreshToken);
       socketHandlers.initSocket();
+      window.location.reload(); // перезагружаем страницу после логина
       return response.data;
     } catch (error) {
       console.error('Ошибка при логине:', error);

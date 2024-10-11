@@ -177,12 +177,12 @@ const Settings = () => {
   };
 
   return (
-    <div className={`flex w-screen h-screen ${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-900'}`}>
-      <div className={`w-72 h-full ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} p-4 shadow-xl`}>
+    <div className={`flex h-full overflow-y-none max-h-fit ${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-900'}`}>
+      <div className={`w-72 top-0 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} p-4 shadow-xl overflow-y-auto`}>
         <h1 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">
           Настройки
         </h1>
-        <div className="space-y-2">
+        <div className="">
           <SettingsOption
             icon={<svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" /></svg>}
             label="Мой аккаунт"

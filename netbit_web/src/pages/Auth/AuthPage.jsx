@@ -1,86 +1,65 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaGoogle, FaGithub } from 'react-icons/fa';
+import { FaGoogle, FaDiscord, FaGithub } from 'react-icons/fa';
 import Features from './components/Features';
 import AnimatedBackground from './components/AnimatedBackground';
 import WaveEffect from './components/WaveEffect';
 import AlphaBadge from './components/AlphaBadge';
 import AuthForm from './components/AuthForm';
+import { login } from '../../utils/api/api'
 
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (formData) => {
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-    }, 2000);
+    try {
+      const response = await login(formData);
+      if (response && response.token) {
+        localStorage.setItem('NetBitProgramm_419074_AccessToken', response.token);
+        onLoginSuccess();
+      }
+    } catch (error) {
+      console.error('Ошибка авторизации:', error);
+    }
+    setLoading(false);
   };
 
   return (
     <motion.div
-      style={{
-        width: '100vw',
-        height: '100vh',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        background: '#1F2937', // bg-gray-900
-        overflow: 'hidden',
-        position: 'relative',
-      }}
+      className="w-screen min-h-screen flex justify-center items-center bg-gray-900 overflow-hidden relative p-4"
     >
       <AnimatedBackground />
       <motion.div
-        style={{
-          width: '100%',
-          maxWidth: '64rem', // max-w-5xl
-          background: 'rgba(31, 41, 55, 0.7)', // bg-gray-800 с прозрачностью
-          borderRadius: '1.5rem', // rounded-3xl
-          overflow: 'hidden',
-          position: 'relative',
-        }}
+        className="w-full max-w-5xl bg-gray-800/70 rounded-3xl overflow-hidden relative"
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
       >
         <WaveEffect />
-        <AlphaBadge isLogin={isLogin} />
         
-        <motion.div
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-          }}
-        >
-          <motion.div
-            style={{
-              width: '50%',
-              padding: '2rem',
-              position: 'relative',
-              zIndex: 10,
-            }}
-          >
-            <h2 className="text-3xl font-bold mb-6 text-blue-400">
-              Добро пожаловать в Нетбит
-            </h2>
+        <motion.div className="flex flex-col lg:flex-row">
+          <motion.div className="w-full lg:w-1/2 p-4 sm:p-6 lg:p-8 relative z-10">
+          <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-blue-400 flex items-start">
+            Добро пожаловать в Нетбит
+            <AlphaBadge />
+          </h2>
 
-            <div className="flex space-x-4 mb-6">
-              {[FaGoogle, FaGithub].map((Icon, index) => (
+            <div className="flex space-x-4 mb-6 sm:mb-6 justify-center lg:justify-start">
+              {[FaGoogle, FaDiscord, FaGithub].map((Icon, index) => (
                 <motion.button
                   key={index}
                   whileHover={{ scale: 1.1, boxShadow: "0px 0px 8px rgb(59, 130, 246)" }}
                   whileTap={{ scale: 0.9 }}
-                  className="p-3 rounded-full bg-gray-700 text-blue-400 hover:bg-gray-600 transition-colors"
+                  className="p-2 sm:p-2 rounded-full bg-gray-700 text-blue-400 hover:bg-gray-600 transition-colors"
                 >
-                  <Icon size={24} />
+                  <Icon size={32} className="sm:text-3x1" />
                 </motion.button>
               ))}
             </div>
 
-            <div className="relative mb-6 w-full">
+            <div className="relative mb-4 sm:mb-6 w-full">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-gray-600"></div>
               </div>
@@ -93,29 +72,20 @@ const AuthPage = () => {
               isLogin={isLogin} 
               loading={loading} 
               onSubmit={handleSubmit} 
-              onToggleMode={() => setIsLogin(!isLogin)} 
+              onToggleMode={() => setIsLogin(!isLogin)}
             />
           </motion.div>
 
-          <motion.div
-            style={{
-              width: '50%',
-              padding: '2rem',
-              background: '#374151', // bg-gray-700
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              position: 'relative',
-            }}
-          >
-            <h2 className="text-2xl font-bold mb-6 text-blue-400 text-center">
+          <motion.div className="hidden lg:flex w-full lg:w-1/2 p-4 sm:p-6 lg:p-8 bg-gray-700 flex-col relative">
+            <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-blue-400 text-center">
               Откройте мир Нетбит
             </h2>
-            
-            <Features />
+            <div className="items-center justify-center">
+              <Features />
+            </div>
 
             <motion.div
-              className="absolute bottom-4 right-4 text-blue-400 text-sm"
+              className="absolute bottom-4 right-4 text-blue-400 text-sm hidden lg:block"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1 }}

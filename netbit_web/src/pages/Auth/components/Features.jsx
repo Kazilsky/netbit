@@ -8,28 +8,37 @@ const Features = () => {
     { 
       icon: FaUsers, 
       title: "Для всех", 
-      description: "Создавайте свои истории и делитесь ими",
+      description: (
+        <div>Общайтесь без границ с <span className="underline text-white font-medium decoration-sky-500">конфиденциальностью</span></div>
+      ),
       disabled: false
+    },
+    { 
+      icon: FaPaintBrush, 
+      title: "Для дизайнеров",
+      description: (
+        <div>Совместное рисование и <span className="underline text-white font-medium decoration-sky-500">творческие активности</span></div>
+      ),
+      disabled: true
     },
     { 
       icon: FaCode, 
       title: "Для программистов",
-      description: "Веб IDE с коллаборацией и интеграцией Git",
-      disabled: true
-    },
-    { 
-      icon: FaPaintBrush, 
-      title: "Для художников",
-      description: "Совместное рисование и творческие активности",
+      description: (
+        <div>Веб IDE с коллаборацией и <span className="underline text-white font-medium decoration-sky-500">интеграцией Git</span></div>
+      ),
       disabled: true
     },
     { 
       icon: FaPlug, 
-      title: "Открытый код",
-      description: "Разрабатывайте собственные плагины и расширения",
+      title: "С открытым кодом",
+      description: (
+        <div>Разрабатывайте <span className="underline text-white font-medium decoration-sky-500">собственные плагины</span></div>
+      ),
       disabled: true
     },
   ];
+  
 
   return (
     <div className="space-y-6">

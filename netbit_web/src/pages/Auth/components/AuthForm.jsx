@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import  { login } from '../../../utils/api/api';
+import { login } from '../../../utils/api/api';
 
 const AuthForm = ({ isLogin, loading, onSubmit, onToggleMode }) => {
   const [formData, setFormData] = useState({
@@ -15,13 +15,17 @@ const AuthForm = ({ isLogin, loading, onSubmit, onToggleMode }) => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSubmit(formData);
+  };
+
   const Auth = () => {
     const credentials = {
       email: formData.email,
       password: formData.password,
     };
-    login(credentials)
-    console.log(credentials);
+    login(credentials);
   }
 
   const formVariants = {
@@ -62,18 +66,9 @@ const AuthForm = ({ isLogin, loading, onSubmit, onToggleMode }) => {
   };
 
   const switchTextVariants = {
-    initial: {
-      y: 10,
-      opacity: 0,
-    },
-    animate: {
-      y: 0,
-      opacity: 1,
-    },
-    exit: {
-      y: -10,
-      opacity: 0,
-    },
+    initial: { y: 10, opacity: 0 },
+    animate: { y: 0, opacity: 1 },
+    exit: { y: -10, opacity: 0 },
   };
 
   const LoadingAnimation = () => (
@@ -124,8 +119,8 @@ const AuthForm = ({ isLogin, loading, onSubmit, onToggleMode }) => {
           initial="initial"
           animate="animate"
           exit="exit"
-          onSubmit={onSubmit}
-          className="space-y-4"
+          onSubmit={handleSubmit}
+          className="space-y-4 sm:space-y-6 w-full mx-auto"
         >
           {!isLogin && (
             <motion.div variants={inputVariants} initial="hidden" animate="visible">
@@ -135,7 +130,7 @@ const AuthForm = ({ isLogin, loading, onSubmit, onToggleMode }) => {
                 placeholder="Никнейм"
                 value={formData.nickname}
                 onChange={handleInputChange}
-                className="w-full px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all transform hover:scale-105"
+                className="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
               />
             </motion.div>
           )}
@@ -147,7 +142,7 @@ const AuthForm = ({ isLogin, loading, onSubmit, onToggleMode }) => {
               placeholder="Email"
               value={formData.email}
               onChange={handleInputChange}
-              className="w-full px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all transform hover:scale-105"
+              className="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
             />
           </motion.div>
 
@@ -158,7 +153,7 @@ const AuthForm = ({ isLogin, loading, onSubmit, onToggleMode }) => {
               placeholder="Пароль"
               value={formData.password}
               onChange={handleInputChange}
-              className="w-full px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all transform hover:scale-105"
+              className="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
             />
           </motion.div>
 
@@ -170,16 +165,17 @@ const AuthForm = ({ isLogin, loading, onSubmit, onToggleMode }) => {
                 placeholder="Подтвердите пароль"
                 value={formData.confirmPassword}
                 onChange={handleInputChange}
-                className="w-full px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all transform hover:scale-105"
+                className="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base rounded-lg bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
               />
             </motion.div>
           )}
 
           {isLogin && (
             <motion.div variants={inputVariants} className="text-right">
-              <a href="#" className="text-sm text-blue-400 hover:text-blue-300">Забыли пароль?</a>
+              <a href="#" className="text-xs sm:text-sm text-blue-400 hover:text-blue-300">Забыли пароль?</a>
             </motion.div>
           )}
+
           <motion.button
             variants={buttonVariants}
             initial="idle"
@@ -187,16 +183,7 @@ const AuthForm = ({ isLogin, loading, onSubmit, onToggleMode }) => {
             whileTap="tap"
             onClick={Auth}
             animate={loading ? "loading" : "idle"}
-            className={`
-              relative w-full py-3 px-4 
-              bg-blue-600 hover:bg-blue-700 
-              text-white font-medium 
-              rounded-lg 
-              transition-colors duration-200
-              disabled:opacity-70 disabled:cursor-not-allowed
-              focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800
-              overflow-hidden
-            `}
+            className="relative w-full py-2 sm:py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm sm:text-base font-medium rounded-lg shadow-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 overflow-hidden"
             type="submit"
             disabled={loading}
           >
@@ -231,7 +218,7 @@ const AuthForm = ({ isLogin, loading, onSubmit, onToggleMode }) => {
 
       <motion.div
         layout
-        className="mt-6 text-center text-gray-400"
+        className="mt-4 sm:mt-6 text-center text-gray-400 text-sm sm:text-base"
       >
         <AnimatePresence mode="wait">
           <motion.span
@@ -247,9 +234,9 @@ const AuthForm = ({ isLogin, loading, onSubmit, onToggleMode }) => {
         </AnimatePresence>
         <motion.button
           onClick={onToggleMode}
-          className="text-white ml-2 hover:text-blue-300 transition-colors relative"
+          className="text-white ml-1 sm:ml-2 hover:text-blue-100 transition-colors focus:outline-none"
           whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          whileTap={{ scale: 0.85 }}
         >
           <AnimatePresence mode="wait">
             <motion.span

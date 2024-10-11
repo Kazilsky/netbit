@@ -30,15 +30,22 @@ const AnimatedBackground = () => {
     };
 
     const generateShapes = () => {
-      return Array.from({ length: 25 }, (_, i) => ({
-        id: i,
-        x: Math.random() * 100,
-        y: Math.random() * 100,
-        size: Math.random() * 200 + 100, // Увеличенный размер: 100-300px
-        rotation: Math.random() * 360,
-        opacity: Math.random() * 0.2 + 0.1,
-        type: Math.random() > 0.5 ? 'circle' : 'square',
-      }));
+      const minSize = 125; // минимальный размер фигуры
+      const maxSize = 250; // максимальный размер фигуры
+      const ratio = 0.75; // например, 60% от максимального размера
+    
+      return Array.from({ length: 50 }, (_, i) => {
+        const size = Math.random() < ratio ? minSize : maxSize;
+        return {
+          id: i,
+          x: Math.random() * 100,
+          y: Math.random() * 100,
+          size,
+          rotation: Math.random() * 360,
+          opacity: Math.random() * 0.2 + 0.1,
+          type: Math.random() > 0.5 ? 'circle' : 'square',
+        };
+      });
     };
 
     setParticles(generateParticles());

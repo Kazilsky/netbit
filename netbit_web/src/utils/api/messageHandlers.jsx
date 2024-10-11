@@ -36,6 +36,8 @@ export const messageHandlers = (initSocket) => {
       },
   
       sendMessage(message) {
+        console.log(message);
+        
         if (socket) {
           socket.emit('sendMessage', message);
         } else {

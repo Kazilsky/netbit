@@ -1,6 +1,6 @@
 import { tokenHandlers } from './tokenHandlers';
 
-const PUBLIC_ROUTES = ['/login', '/register', '/check-email'];
+const PUBLIC_ROUTES = ['/login', '/register'];
 
 export const setupInterceptors = (api) => {
   api.interceptors.request.use(
