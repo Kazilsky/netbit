@@ -1,8 +1,7 @@
-
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes, useLocation } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from 'framer-motion';
-import { Menu } from 'lucide-react';
+import { Home, Mails, User, Settings, Menu } from 'lucide-react';
 
 import SettingsList from "../pages/Settings/Settings";
 import DMChat from "../pages/Chat/DMChat";
@@ -12,13 +11,35 @@ import AuthPage from '../pages/Auth/AuthPage';
 
 const PageWrapper = ({ children }) => (
   <motion.div
-    initial={{ opacity: 0, y: 0 }}
+    initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
-    exit={{ opacity: 0, y: 0 }}
-    transition={{ duration: 0.15 }}
+    exit={{ opacity: 0, y: 20 }}
+    transition={{ duration: 0.2 }}
   >
     {children}
   </motion.div>
+);
+
+const BottomNavItem = ({ icon: Icon, label, isActive, onClick }) => (
+  <div
+    onClick={onClick}
+    className={`flex flex-col items-center justify-center w-full py-2 cursor-pointer transition-all duration-200 ease-in-out ${
+      isActive ? 'text-blue-500' : 'text-gray-500 dark:text-gray-400'
+    }`}
+  >
+    <div className="relative">
+      <Icon className="h-6 w-6 mb-1" />
+      {isActive && (
+        <motion.div
+          layoutId="activeIndicator"
+          className="absolute -bottom-1 left-1/2 w-5 h-1 bg-blue-500 rounded-full"
+          initial={false}
+          transition={{ type: "spring", stiffness: 500, damping: 30 }}
+        />
+      )}
+    </div>
+    <span className="text-xs font-medium">{label}</span>
+  </div>
 );
 
 const MainContent = () => {
@@ -26,21 +47,27 @@ const MainContent = () => {
 
   return (
     <AnimatePresence mode="wait">
-      <Routes>
-        <Route path="/" element={<PageWrapper><h1>Главная страница</h1></PageWrapper>} key="home" />
-        <Route path="/setting" element={<PageWrapper><SettingsList /></PageWrapper>} key="settings" />
-        <Route path="/dmchat" element={<PageWrapper><DMChat /></PageWrapper>} key="dmchat" />
-        <Route path="/help" element={<PageWrapper><h1>ЭПИК РУИНА РАЗБАНЬ ДОКА</h1></PageWrapper>} key="help" />
+      <Routes location={location} key={location.pathname}>
+        <Route path="/" element={<PageWrapper><h1>Главная страница</h1></PageWrapper>} />
+        <Route path="/setting" element={<PageWrapper><SettingsList /></PageWrapper>} />
+        <Route path="/dmchat" element={<PageWrapper><DMChat /></PageWrapper>} />
+        <Route path="/help" element={<PageWrapper><h1>ЭПИК РУИНА РАЗБАНЬ ДОКА</h1></PageWrapper>} />
       </Routes>
     </AnimatePresence>
   );
 };
 
-const Routers = () => {
+const AppContent = () => {
   const [activeTab, setActiveTab] = useState('home');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [selectedContact, setSelectedContact] = useState(null);
+  const navigate = useNavigate();
+
+  const handleContactSelect = (contact) => {
+    setSelectedContact(contact);
+  };
 
   useEffect(() => {
     const handleResize = () => {
@@ -69,17 +96,22 @@ const Routers = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
+  const handleNavigation = (path, tab) => {
+    setActiveTab(tab);
+    navigate(path);
+  };
+
   return (
-    <Router>
+    <div className="flex flex-col min-h-screen max-h-screen w-screen">
       {isLoggedIn ? (
-        <div className="flex flex-col min-h-screen max-h-screen w-screen">
-          <Header isLoggedIn={true} activeTab={activeTab} setActiveTab={setActiveTab}>
-            {isMobile && (
+        <>
+          {!isMobile && (
+            <Header isLoggedIn={true} activeTab={activeTab} setActiveTab={setActiveTab}>
               <button onClick={toggleSidebar} className="p-2">
                 <Menu size={24} />
               </button>
-            )}
-          </Header>
+            </Header>
+          )}
           <div className="flex flex-1 overflow-hidden">
             {!isMobile && <Sidebar />}
             {isMobile && (
@@ -93,15 +125,48 @@ const Routers = () => {
               </motion.div>
             )}
             <main className="flex-1 overflow-auto">
-              <MainContent />
+              <Routes>
+                <Route path="/" element={<PageWrapper><h1>Главная страница</h1></PageWrapper>} />
+                <Route path="/setting" element={<PageWrapper><SettingsList /></PageWrapper>} />
+                <Route 
+                  path="/dmchat" 
+                  element={
+                    <PageWrapper>
+                      <DMChat onContactSelect={handleContactSelect} />
+                    </PageWrapper>
+                  } 
+                />
+                <Route path="/help" element={<PageWrapper><h1>ЭПИК РУИНА РАЗБАНЬ ДОКА</h1></PageWrapper>} />
+              </Routes>
             </main>
           </div>
-        </div>
+          {isMobile && !selectedContact && (
+            <motion.div
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", stiffness: 500, damping: 30 }}
+              className="fixed bottom-0 w-full bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 flex justify-around items-center h-16 px-4 shadow-lg"
+            >
+              <BottomNavItem icon={Home} label="Главная" isActive={activeTab === 'home'} onClick={() => handleNavigation('/', 'home')} />
+              <BottomNavItem icon={Mails} label="Чат" isActive={activeTab === 'chat'} onClick={() => handleNavigation('/dmchat', 'chat')} />
+              <BottomNavItem icon={Settings} label="Настройки" isActive={activeTab === 'settings'} onClick={() => handleNavigation('/setting', 'settings')} />
+            </motion.div>
+          )}
+        </>
       ) : (
         <AuthPage onLoginSuccess={handleLoginSuccess} />
       )}
+    </div>
+  );
+};
+
+const Routers = () => {
+  return (
+    <Router>
+      <AppContent />
     </Router>
   );
 };
 
-export default Routers;
+export default Routers; 

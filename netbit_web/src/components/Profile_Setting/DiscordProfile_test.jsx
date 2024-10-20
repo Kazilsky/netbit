@@ -103,6 +103,16 @@ const DiscordStyleProfile = () => {
       </motion.button>
     </div> */}
   </div>
+  <motion.button 
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+      className={`
+        ${theme === 'dark' ? 'bg-red-700 hover:bg-red-600' : 'bg-red-400 hover:bg-red-500'}
+        mt-12 px-4 py-2 rounded transition-colors duration-200 ease-in-out
+      `}
+    >
+      Выйти из аккаунта
+    </motion.button>
 </motion.div>
   );
 };

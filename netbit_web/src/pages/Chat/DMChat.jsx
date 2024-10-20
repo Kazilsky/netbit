@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, Send, Paperclip, Trash2, Check, Pencil, ArrowLeft } from 'lucide-react';
+import { Search, Send, Paperclip, Trash2, Check, Pencil, ArrowLeft, MoreVertical } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import api, { getUsers, initializeSocket, sendMessage, deleteMessage, markMessageAsRead } from '../../utils/api/api';
 
@@ -35,7 +35,19 @@ const Avatar = ({ src, alt, fallback, className }) => (
   </div>
 );
 
-export default function DMChat() {
+const BottomNavItem = ({ icon: Icon, label, isActive, onClick }) => (
+  <button
+    onClick={onClick}
+    className={`flex flex-col items-center justify-center w-full py-2 ${
+      isActive ? 'text-blue-500' : 'text-gray-500 dark:text-gray-400'
+    }`}
+  >
+    <Icon className="h-6 w-6 mb-1" />
+    <span className="text-xs">{label}</span>
+  </button>
+);
+
+export default function DMChat({ onContactSelect }) {
   const [userId, setUserId] = useState(0);
   const [selectedContact, setSelectedContact] = useState(null);
   const [message, setMessage] = useState('');
@@ -46,7 +58,36 @@ export default function DMChat() {
   const [selectedMessage, setSelectedMessage] = useState(null);
   const [editingMessage, setEditingMessage] = useState(null);
   const messagesEndRef = useRef(null);
+  const [textScale, setTextScale] = useState(100);
 
+  useEffect(() => {
+    // Получаем текущий масштаб текста из localStorage
+    const storedScale = localStorage.getItem('NetBitProgramm_448673_Size');
+    if (storedScale) {
+      setTextScale(Number(storedScale));
+    }
+
+    // Слушаем изменения масштаба текста
+    const handleStorageChange = (e) => {
+      if (e.key === 'NetBitProgramm_448673_Size') {
+        setTextScale(Number(e.newValue));
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
+
+  // Функция для расчета высоты области сообщений
+  const calculateMessagesHeight = () => {
+      const baseHeight = isMobile ? 147 : 214;
+      const scaledHeight = baseHeight * (textScale / 100);
+      return `calc(100vh - ${scaledHeight}px)`;
+  };
+  
   useEffect(() => {
     fetchContacts();
     fetchUserId();
@@ -69,8 +110,16 @@ export default function DMChat() {
     if (selectedContact) {
       fetchMessages(selectedContact.user_id);
       if (isMobile) setShowContactList(false);
+      onContactSelect(selectedContact);
+    } else {
+      onContactSelect(null);
     }
-  }, [selectedContact, isMobile]);
+  }, [selectedContact, isMobile, onContactSelect]);
+
+  const handleBackToContacts = () => {
+    setShowContactList(true);
+    setSelectedContact(null);
+  };
 
   const handleEditMessage = (messageId, newText) => {
     setMessages(prevMessages => prevMessages.map(msg => 
@@ -80,8 +129,8 @@ export default function DMChat() {
   };
   
   const handleSelectMessage = (messageId) => {
-      setSelectedMessage(messageId === selectedMessage ? null : messageId);
-    };
+    setSelectedMessage(messageId === selectedMessage ? null : messageId);
+  };
 
   const handleNewMessage = (data) => {
     setMessages(prevMessages => [...prevMessages, data]);
@@ -132,11 +181,6 @@ export default function DMChat() {
     markMessageAsRead(messageId);
   };
 
-  const handleBackToContacts = () => {
-    setShowContactList(true);
-    setSelectedContact(null);
-  };
-
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -144,25 +188,27 @@ export default function DMChat() {
   useEffect(scrollToBottom, [messages]);
 
   return (
-    <div className="flex w-full h-full bg-gray-900 overflow-hidden">
+    <div className="flex w-full h-full bg-white dark:bg-gray-900">
       {/* Contact List */}
       <motion.div
         initial={false}
         animate={{ width: isMobile && selectedContact ? '0%' : '100%' }}
         transition={{ duration: 0.3 }}
-        className="bg-gray-800 h-full overflow-hidden"
+        className="bg-gray-100 dark:bg-gray-800 h-full overflow-hidden"
         style={{ flex: isMobile ? 'none' : '0 0 25%' }}
       >
         <div className="p-4 h-full overflow-y-auto">
           <Input
             type="text"
-            placeholder="Search contacts..."
+            placeholder="Поиск контактов..."
             className="mb-4"
           />
           {contacts.map(contact => (
             <div
               key={contact.user_id}
-              className="flex items-center p-3 hover:bg-gray-700 rounded-lg cursor-pointer"
+              className={`flex items-center p-3 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg cursor-pointer ${
+                selectedContact?.user_id === contact.user_id ? 'bg-gray-200 dark:bg-gray-700' : ''
+              }`}
               onClick={() => setSelectedContact(contact)}
             >
               <Avatar
@@ -172,8 +218,8 @@ export default function DMChat() {
                 className="w-10 h-10 mr-3"
               />
               <div>
-                <div className="font-semibold text-white">{contact.username}</div>
-                <div className="text-sm text-gray-400">{contact.status}</div>
+                <div className="font-semibold text-gray-800 dark:text-white">{contact.username}</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">{contact.status}</div>
               </div>
             </div>
           ))}
@@ -189,11 +235,11 @@ export default function DMChat() {
             animate={isMobile ? { x: 0 } : { opacity: 1 }}
             exit={isMobile ? { x: '100%' } : { opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="flex flex-col bg-gray-900 h-full relative"
+            className="flex flex-col bg-white dark:bg-gray-900 h-full relative"
             style={{ flex: isMobile ? '1 0 100%' : '1 0 75%' }}
           >
             {/* Header */}
-            <div className="bg-gray-800/40 p-4 border-b border-gray-700/30 flex items-center">
+            <div className="bg-gray-200/40 dark:bg-gray-800/40 p-4 border-b border-gray-300 dark:border-gray-700/30 flex items-center">
               {isMobile && (
                 <Button onClick={() => setSelectedContact(null)} className="mr-2">
                   <ArrowLeft className="h-5 w-5" />
@@ -206,87 +252,89 @@ export default function DMChat() {
                 className="h-10 w-10 mr-3"
               />
               <div>
-                <div className="font-semibold text-white">
+                <div className="font-semibold text-gray-800 dark:text-white">
                   {selectedContact?.username}
                 </div>
-                <div className="text-sm text-gray-400">
+                <div className="text-sm text-gray-600 dark:text-gray-400">
                   {selectedContact?.status}
                 </div>
               </div>
             </div>
 
-            {/* Messages */}
-            <div className="flex-1 overflow-hidden">
-              <div 
-                className="h-full overflow-y-auto p-4"
-                style={{ 
-                  scrollbarWidth: 'thin', 
-                  scrollbarColor: '#4B5563 #1F2937',
-                  height: 'calc(100vh - 144px)' // Adjust based on header and input heights
-                }}
-              >
-                <AnimatePresence>
-                  {messages.map(msg => (
-                    <motion.div 
-                      key={msg.id} 
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -20 }}
-                      className={`mb-4 flex ${msg.sender_id === userId ? 'justify-end' : 'justify-start'}`}
-                    >
-                    {msg.sender_id !== userId && (
-                      <Avatar
-                        src={selectedContact?.avatar}
-                        alt={selectedContact?.username}
-                        fallback={selectedContact?.name?.charAt(0)}
-                        className="h-8 w-8 mr-2 self-end"
-                      />
-                    )}
-                    
-                    <div className={`relative group max-w-[70%] p-3 rounded-2xl shadow-lg ${
-                      msg.sender_id === userId ? 'bg-blue-600/40 text-white' : 'bg-gray-700/40 text-gray-200'
-                    }`}>
-                      <p>{msg.text}</p>
-                      
-                      <div className="flex items-center justify-end mt-1 space-x-2 text-xs text-gray-300/70">
-                        {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            <div className="flex flex-col w-full h-full">
+              {/* Messages */}
+              <div className="flex-grow overflow-y-auto p-4" style={{ maxHeight: calculateMessagesHeight()}}>
+              {messages.map((msg) => (
+                <div key={msg.id} className={`mb-4 flex ${msg.sender_id === userId ? 'justify-end' : 'justify-start'}`}>
+                  <div className="flex flex-col items-end max-w-[80%] relative group">
+                    {selectedMessage === msg.id && (
+                      <div className="absolute -top-8 right-0 flex bg-gray-200 dark:bg-gray-800 rounded-full shadow-lg z-10 p-1">
+                        <button onClick={() => handleMarkAsRead(msg.id)} className="p-2 hover:bg-gray-300 dark:hover:bg-gray-700 rounded-full">
+                          <Check className="h-4 w-4 text-gray-600 dark:text-gray-300" />
+                        </button>
+                        <button onClick={() => setEditingMessage(msg.id)} className="p-2 hover:bg-gray-300 dark:hover:bg-gray-700 rounded-full">
+                          <Pencil className="h-4 w-4 text-gray-600 dark:text-gray-300" />
+                        </button>
+                        <button onClick={() => handleDeleteMessage(msg.id)} className="p-2 hover:bg-gray-300 dark:hover:bg-gray-700 rounded-full">
+                          <Trash2 className="h-4 w-4 text-red-400" />
+                        </button>
                       </div>
-
-                      {/* ... (действия с сообщениями остаются без изменений) */}
-                    </div>
-                    
-                    {msg.sender_id === userId && (
-                      <Avatar
-                        src="/path/to/user/avatar.jpg"
-                        alt="You"
-                        fallback="У"
-                        className="h-8 w-8 ml-2 self-end"
-                      />
                     )}
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-              <div ref={messagesEndRef} />
+                    <div className="flex items-end">
+                      {msg.sender_id !== userId && (
+                        <Avatar
+                          src={contacts.find(c => c.user_id === msg.sender_id)?.avatar}
+                          alt={contacts.find(c => c.user_id === msg.sender_id)?.username}
+                          fallback={contacts.find(c => c.user_id === msg.sender_id)?.username.charAt(0)}
+                          className="w-8 h-8 mr-2 flex-shrink-0"
+                        />
+                      )}
+                      <div className={`relative p-3 rounded-2xl shadow-lg ${
+                        msg.sender_id === userId ? 'bg-blue-100 dark:bg-blue-600/40 text-blue-800 dark:text-white' : 'bg-gray-200 dark:bg-gray-700/40 text-gray-800 dark:text-gray-200'
+                      }`}>
+                        {msg.sender_id !== userId && (
+                          <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                            {contacts.find(c => c.user_id === msg.sender_id)?.username}
+                          </div>
+                        )}
+                        <p className="break-words whitespace-pre-wrap">{msg.text}</p>
+                        <div className="text-xs text-gray-500 dark:text-gray-300 mt-1">
+                          {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </div>
+                      </div>
+                      {msg.sender_id === userId && (
+                        <Avatar
+                          src={contacts.find(c => c.user_id === msg.sender_id)?.avatar}
+                          alt={contacts.find(c => c.user_id === msg.sender_id)?.username}
+                          fallback={contacts.find(c => c.user_id === msg.sender_id)?.username.charAt(0)}
+                          className="w-8 h-8 ml-2 flex-shrink-0"
+                        />
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+                <div ref={messagesEndRef} />
               </div>
-            </div>
 
-            {/* Message Input */}
-            <div className="bg-gray-800/40 p-4 border-t border-gray-700/30 absolute bottom-0 left-0 right-0">
-              <form onSubmit={handleSendMessage} className="flex items-center">
-                <Button className="mr-2">
-                  <Paperclip className="h-5 w-5" />
-                </Button>
-                <Input
-                  type="text"
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  placeholder="Введите сообщение..."
-                  className="flex-1"
-                />
-                <Button type="submit" className="ml-2">
-                  <Send className="h-5 w-5"/>
-                </Button>
-              </form>
+              {/* Message Input */}
+              <div className="bg-gray-100 dark:bg-gray-800 p-4 border-t border-gray-300 dark:border-gray-700">
+                <form onSubmit={handleSendMessage} className="flex items-center">
+                  <Button type="submit" className="mr-2">
+                    <Paperclip className='h-5 w-5'/>
+                  </Button>
+                  <Input
+                    type="text"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    placeholder="Введите сообщение..."
+                    className="flex-1"
+                  />
+                  <Button type="submit" className="ml-2">
+                    <Send className="h-5 w-5"/>
+                  </Button>
+                </form>
+              </div>
             </div>
           </motion.div>
         )}
