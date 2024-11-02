@@ -14,7 +14,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 //   );
 
 const MenuItem = ({ imageSrc, title }) => (
-  <motion.div className="h-14 w-14 mb-4 flex items-center justify-center bg-gray-800 rounded-full hover:bg-gray-700 cursor-pointer"
+  <motion.div className="h-14 w-14 mb-1 mt-2 flex items-center justify-center bg-gray-800 rounded-full hover:bg-gray-700 cursor-pointer"
     whileHover={{scale: 1.05}}
     whileTap={{scale: 0.95}}
   >

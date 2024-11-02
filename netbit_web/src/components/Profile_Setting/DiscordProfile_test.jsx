@@ -9,6 +9,7 @@ import StatusSelector from './StatusSelector';
 const DiscordStyleProfile = () => {
   const [user, setUser] = useState({
     displayName: 'Kazilsky',
+    'Отображаемое имя': 'Kazilsky',
     'Имя пользователя': '_kazilsky',
     'usercode': '_kazilsky',
     discriminator: '1234',
@@ -16,7 +17,7 @@ const DiscordStyleProfile = () => {
     'Номер телефона': '********8620'
   });
 
-  const fields = ['Имя пользователя', 'Эл. почта', 'Номер телефона'];
+  const fields = ['Имя пользователя', 'Отображаемое имя', 'Эл. почта', 'Номер телефона'];
 
   const [status, setStatus] = useState('online');
   const { theme } = useContext(ThemeContext);

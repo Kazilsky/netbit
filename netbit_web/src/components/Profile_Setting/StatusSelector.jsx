@@ -34,11 +34,10 @@ const StatusSelector = ({ status, setStatus, theme }) => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className={`absolute mt-2 w-48 rounded-md shadow-lg ${
-              theme === 'dark' ? '#151c26' : 'bg-white'
-            }`}
+            className={`absolute mt-2 w-48 rounded-md shadow-lg`}
+            style={{ backgroundColor: theme === 'dark' ? '#1b2430' : 'white'}}
           >
-            <div className="py-1 z-50">
+            <div className="z-50">
               {statusOptions.map((option) => (
                 <motion.button
                   key={option.id}
